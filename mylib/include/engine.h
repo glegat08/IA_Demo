@@ -1,6 +1,9 @@
 #pragma once
+#include "sceneManager.h"
 
 class Engine
 {
-	void run();
+public:
+
+	void exec();
 };
