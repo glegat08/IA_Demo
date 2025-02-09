@@ -11,6 +11,10 @@ set(SOURCES
     ${SOURCE_DIR}/rangedWeapon.cpp
     ${SOURCE_DIR}/sceneManager.cpp
     ${SOURCE_DIR}/sceneBase.cpp
+    ${SOURCE_DIR}/bossBehavior.cpp
+    ${SOURCE_DIR}/pause.cpp
+    ${SOURCE_DIR}/game.cpp
+    ${SOURCE_DIR}/menu.cpp
 )
 
 set(HEADERS
@@ -21,6 +25,10 @@ set(HEADERS
     ${HEADER_DIR}/rangedWeapon.h
     ${HEADER_DIR}/sceneManager.h
     ${HEADER_DIR}/sceneBase.h
+    ${HEADER_DIR}/bossBehavior.h
+    ${HEADER_DIR}/game.h
+    ${HEADER_DIR}/pause.h
+    ${HEADER_DIR}/menu.h
 )
 
 add_library(${PROJECT_NAME}
