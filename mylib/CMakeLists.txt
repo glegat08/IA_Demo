@@ -32,8 +32,17 @@ set(HEADERS
 )
 
 add_library(${PROJECT_NAME}
+STATIC
     ${SOURCES}
     ${HEADERS}
+)
+
+target_link_libraries(${PROJECT_NAME}
+PRIVATE
+    sfml-graphics
+    sfml-window
+    sfml-system
+    sfml-audio
 )
 
 target_include_directories(${PROJECT_NAME}
