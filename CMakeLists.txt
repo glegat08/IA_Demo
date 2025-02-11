@@ -32,3 +32,5 @@ FetchContent_MakeAvailable(SFML)
 
 add_subdirectory(mylib)
 add_subdirectory(mainFile)
+
+target_include_directories(mylib PUBLIC ${SFML_SOURCE_DIR}/include)
