@@ -37,6 +37,8 @@ STATIC
     ${HEADERS}
 )
 
+target_include_directories(mylib PUBLIC ${SFML_INCLUDE_DIR}) 
+link_directories(${SFML_LIB_DIR})
 target_link_libraries(${PROJECT_NAME}
 PRIVATE
     sfml-graphics
@@ -49,6 +51,11 @@ target_include_directories(${PROJECT_NAME}
 PUBLIC
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${HEADER_DIR}>
+)
+
+add_custom_command(TARGET mylib POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${SFML_BIN_DIR} $<TARGET_FILE_DIR:mylib>
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Libraries")
