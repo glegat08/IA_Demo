@@ -14,8 +14,8 @@ class IEnemy : public GameObject
 {
 public:
     IEnemy();
-    IEnemy(sf::RenderWindow* window, Player* player);
-    virtual ~IEnemy() = default;
+    IEnemy(sf::RenderWindow* window, Hero* hero);
+    virtual ~IEnemy() override = default;
 
     // Pure virtual methods
     virtual sf::Sprite& getSprite() = 0;
@@ -33,7 +33,7 @@ public:
 
 protected:
     sf::RenderWindow* m_renderWindow;
-    Player* m_player;
+    Hero* m_hero;
 
     int m_health = 100;
     int m_shield = 0;
@@ -42,11 +42,11 @@ protected:
 class FirstBoss : public IEnemy
 {
 public:
-    FirstBoss(sf::RenderWindow* window, Player* player);
+    FirstBoss(sf::RenderWindow* window, Hero* boss);
 
     void setTexture() override;
     void movement() override;
-    bool isAttacking() override;
+    bool isAttacking() const override;
     int getHp() const override;
     int getShield() const override;
     void takeDamage(int damage) override;
@@ -61,8 +61,6 @@ public:
 private:
     sf::Texture m_cBossTexture;
     sf::Sprite m_cBossSprite;
-
-    void moveLikeACrab(const sf::Vector2u& windowSize);
 };
 
 #endif // BOSS_H
