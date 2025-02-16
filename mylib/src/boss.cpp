@@ -1,4 +1,5 @@
 #include "boss.h"
+#include <stdexcept>
 
 enum Corner
 {
@@ -89,19 +90,37 @@ void IEnemy::randomPos(sf::RenderWindow* window)
 FirstBoss::FirstBoss(sf::RenderWindow* window, Hero* hero)
     : IEnemy(window, hero)
 {
-    m_health = 150000;
+    if (!m_textureIdle.loadFromFile("idle.png") ||
+        !m_textureRun.loadFromFile("run.png") ||
+        !m_textureJumpAttack.loadFromFile("jumpAttack.png") ||
+        !m_textureHurt.loadFromFile("hurt.png") ||
+        !m_textureTransformation.loadFromFile("transformation.png") ||
+        !m_textureAttack1.loadFromFile("attack1.png") ||
+        !m_textureAttack2.loadFromFile("attack2.png") ||
+        !m_textureAttack3.loadFromFile("attack3.png") ||
 
-    setTexture();
-    srand(static_cast<unsigned int>(time(nullptr)));
+        !m_textureIdleFlame.loadFromFile("idle_flame.png") ||
+        !m_textureRunFlame.loadFromFile("run_flame.png") ||
+        !m_textureJumpAttackFlame.loadFromFile("jumpAttack_flame.png") ||
+        !m_textureHurtFlame.loadFromFile("hurt_flame.png") ||
+        !m_textureDeath.loadFromFile("death.png") ||
+        !m_textureAttackFlame1.loadFromFile("attack_flame1.png") ||
+        !m_textureAttackFlame2.loadFromFile("attack_flame2.png") ||
+        !m_textureAttackFlame3.loadFromFile("attack_flame3.png"))
+    {
+        throw "Erreur de chargement des textures du boss" << std::endl;
+    }
+
+    m_cBossSprite.setTexture(m_textureIdle);
 }
 
 void FirstBoss::setTexture()
 {
-    m_cBossTexture.loadFromFile("resource\\CrabBoss.png");
+    /*m_cBossTexture.loadFromFile("resource\\.png");
     m_cBossSprite.setTexture(m_cBossTexture);
     m_cBossSprite.setScale(0.5f, 0.5f);
     m_cBossSprite.setPosition(100.f, 100.f);
-    m_cBossSprite.setRotation(0.f);
+    m_cBossSprite.setRotation(0.f);*/
 }
 
 void FirstBoss::movement()
@@ -127,9 +146,19 @@ int FirstBoss::getShield() const
 
 void FirstBoss::takeDamage(int damage)
 {
+    if (damage <= 0)
+        return;
+
     m_health -= damage;
-    if (m_health < 0) 
-        m_health = 0;
+
+    if (m_health <= 0)
+    {
+        setState(BossStatePhaseTwo::Death);
+        return;
+    }
+
+    if (m_health <= 50 && !m_phaseTwoActive)
+        setState(BossStatePhaseOne::Transformation);
 }
 
 void FirstBoss::setInvulnerable(float duration)
@@ -166,17 +195,20 @@ void FirstBoss::firstBossMove(const sf::Vector2u& windowSize)
 
     sf::Vector2f position = m_cBossSprite.getPosition();
 
-    if (movementSwitchClock.getElapsedTime().asSeconds() > 3.f) {
+    if (movementSwitchClock.getElapsedTime().asSeconds() > 3.f) 
+    {
         switchMove = (std::rand() % 2 == 0);
         movementSwitchClock.restart();
     }
 
     if (switchMove) {
-        if (position.x <= 0) {
+        if (position.x <= 0)
+        {
             move = 10;
             m_cBossSprite.setRotation(90.f);
         }
-        else if (position.x >= (windowSize.x - 10.f) - m_cBossSprite.getGlobalBounds().width) {
+        else if (position.x >= (windowSize.x - 10.f) - m_cBossSprite.getGlobalBounds().width)
+        {
             move = -10;
             m_cBossSprite.setRotation(270.f);
         }
@@ -194,3 +226,96 @@ void FirstBoss::firstBossMove(const sf::Vector2u& windowSize)
         m_cBossSprite.move(0, move * 2.f);
     }*/
 }
+
+void FirstBoss::setState(BossStatePhaseOne newState)
+{
+    if (m_phaseTwoActive)
+        return;
+
+    m_statePhaseOne = newState;
+    m_currentFrame = 0;
+    m_animationClock.restart();
+
+    switch (m_statePhaseOne)
+    {
+    case BossStatePhaseOne::Idle:
+        m_cBossSprite.setTexture(m_textureIdle);
+        break;
+    case BossStatePhaseOne::Run:
+        m_cBossSprite.setTexture(m_textureRun);
+        break;
+    case BossStatePhaseOne::JumpAttack:
+        m_cBossSprite.setTexture(m_textureJumpAttack);
+        break;
+    case BossStatePhaseOne::Hurt:
+        m_cBossSprite.setTexture(m_textureHurt);
+        break;
+    case BossStatePhaseOne::Attack1:
+        m_cBossSprite.setTexture(m_textureAttack1);
+        break;
+    case BossStatePhaseOne::Attack2:
+        m_cBossSprite.setTexture(m_textureAttack2);
+        break;
+    case BossStatePhaseOne::Attack3:
+        m_cBossSprite.setTexture(m_textureAttack3);
+        break;
+    case BossStatePhaseOne::Transformation:
+        m_cBossSprite.setTexture(m_textureTransformation);
+        m_animationClock.restart();
+        break;
+    }
+}
+
+void FirstBoss::setState(BossStatePhaseTwo newState)
+{
+    if (!m_phaseTwoActive)
+        return;
+
+    m_statePhaseTwo = newState;
+    m_currentFrame = 0;
+    m_animationClock.restart();
+
+    switch (m_statePhaseTwo)
+    {
+    case BossStatePhaseTwo::IdleFlame:
+        m_cBossSprite.setTexture(m_textureIdleFlame);
+        break;
+    case BossStatePhaseTwo::RunFlame:
+        m_cBossSprite.setTexture(m_textureRunFlame);
+        break;
+    case BossStatePhaseTwo::JumpAttackFlame:
+        m_cBossSprite.setTexture(m_textureJumpAttackFlame);
+        break;
+    case BossStatePhaseTwo::HurtFlame:
+        m_cBossSprite.setTexture(m_textureHurtFlame);
+        break;
+    case BossStatePhaseTwo::Death:
+        m_cBossSprite.setTexture(m_textureDeath);
+        break;
+    case BossStatePhaseTwo::AttackFlame1:
+        m_cBossSprite.setTexture(m_textureAttackFlame1);
+        break;
+    case BossStatePhaseTwo::AttackFlame2:
+        m_cBossSprite.setTexture(m_textureAttackFlame2);
+        break;
+    case BossStatePhaseTwo::AttackFlame3:
+        m_cBossSprite.setTexture(m_textureAttackFlame3);
+        break;
+    }
+}
+
+void FirstBoss::switchToPhaseTwo()
+{
+    if (m_phaseTwoActive)
+        return;
+
+    m_phaseTwoActive = true;
+
+    sf::Clock transformationClock;
+    while (transformationClock.getElapsedTime().asSeconds() < 2.0f)
+    {
+    }
+
+    setState(BossStatePhaseTwo::IdleFlame);
+}
+

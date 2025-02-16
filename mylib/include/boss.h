@@ -4,10 +4,34 @@
 #include "gameObject.h"
 #include "hero.h"
 
+enum class BossStatePhaseOne {
+    Idle,
+    Run,
+    JumpAttack,
+    Hurt,
+    Attack1,
+    Attack2,
+    Attack3,
+    Transformation
+};
+
+enum class BossStatePhaseTwo {
+    IdleFlame,
+    RunFlame,
+    JumpAttackFlame,
+    HurtFlame,
+    Death,
+    AttackFlame1,
+    AttackFlame2,
+    AttackFlame3
+};
+
 struct AnimationData {
     int frameWidth;
     int frameHeight;
     int numFrames;
+    float frameDuration;
+    sf::Texture texture;
 };
 
 class IEnemy : public GameObject
@@ -17,7 +41,6 @@ public:
     IEnemy(sf::RenderWindow* window, Hero* hero);
     virtual ~IEnemy() override = default;
 
-    // Pure virtual methods
     virtual sf::Sprite& getSprite() = 0;
     virtual sf::FloatRect getHitbox() const = 0;
 
@@ -47,6 +70,9 @@ public:
     void setTexture() override;
     void movement() override;
     bool isAttacking() const override;
+    void setState(BossStatePhaseOne newState);
+    void setState(BossStatePhaseTwo newState);
+    void switchToPhaseTwo();
     int getHp() const override;
     int getShield() const override;
     void takeDamage(int damage) override;
@@ -58,11 +84,38 @@ public:
     void firstBossMove(const sf::Vector2u& windowSize);
 
     sf::Sprite& getSprite() override;
-    sf::FloatRect getHitbox() const;
+    sf::FloatRect getHitbox() const override;
 
 private:
-    sf::Texture m_cBossTexture;
+    // Phase 1 Textures
+    sf::Texture m_textureIdle;
+    sf::Texture m_textureRun;
+    sf::Texture m_textureJumpAttack;
+    sf::Texture m_textureHurt;
+    sf::Texture m_textureTransformation;
+    sf::Texture m_textureAttack1;
+    sf::Texture m_textureAttack2;
+    sf::Texture m_textureAttack3;
+
+    // Phase 2 Textures
+    sf::Texture m_textureIdleFlame;
+    sf::Texture m_textureRunFlame;
+    sf::Texture m_textureJumpAttackFlame;
+    sf::Texture m_textureHurtFlame;
+    sf::Texture m_textureDeath;
+    sf::Texture m_textureAttackFlame1;
+    sf::Texture m_textureAttackFlame2;
+    sf::Texture m_textureAttackFlame3;
+
     sf::Sprite m_cBossSprite;
+
+    AnimationData m_currentAnimation;
+    sf::Clock m_animationClock;
+    int m_currentFrame = 0;
+
+    BossStatePhaseOne m_statePhaseOne = BossStatePhaseOne::Idle;
+    BossStatePhaseTwo m_statePhaseTwo = BossStatePhaseTwo::IdleFlame;
+    bool m_phaseTwoActive = false;
 };
 
 #endif // BOSS_H
