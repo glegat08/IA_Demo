@@ -42,7 +42,7 @@ protected:
 class FirstBoss : public IEnemy
 {
 public:
-    FirstBoss(sf::RenderWindow* window, Hero* boss);
+    FirstBoss(sf::RenderWindow* window, Hero* hero);
 
     void setTexture() override;
     void movement() override;
@@ -54,6 +54,8 @@ public:
     void getWeapon() override;
     void switchWeapon() override;
     void updateAnim() override;
+    void resetAnimation();
+    void firstBossMove(const sf::Vector2u& windowSize);
 
     sf::Sprite& getSprite() override;
     sf::FloatRect getHitbox() const;
