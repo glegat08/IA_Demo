@@ -108,7 +108,7 @@ FirstBoss::FirstBoss(sf::RenderWindow* window, Hero* hero)
         !m_textureAttackFlame2.loadFromFile("attack_flame2.png") ||
         !m_textureAttackFlame3.loadFromFile("attack_flame3.png"))
     {
-        throw "Erreur de chargement des textures du boss" << std::endl;
+        throw "Erreur de chargement des textures du boss";
     }
 
     m_cBossSprite.setTexture(m_textureIdle);
