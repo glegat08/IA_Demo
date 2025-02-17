@@ -15,6 +15,9 @@ set(SOURCES
     ${SOURCE_DIR}/pause.cpp
     ${SOURCE_DIR}/game.cpp
     ${SOURCE_DIR}/menu.cpp
+    ${SOURCE_DIR}/gameObject.cpp
+    ${SOURCE_DIR}/heroState.cpp
+    ${SOURCE_DIR}/state.cpp
 )
 
 set(HEADERS
@@ -29,6 +32,9 @@ set(HEADERS
     ${HEADER_DIR}/game.h
     ${HEADER_DIR}/pause.h
     ${HEADER_DIR}/menu.h
+    ${HEADER_DIR}/gameObject.h
+    ${HEADER_DIR}/heroState.h
+    ${HEADER_DIR}/state.h
 )
 
 add_library(${PROJECT_NAME}
