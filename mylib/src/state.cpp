@@ -1,9 +1,15 @@
 #include "state.h"
 #include <SFML/Graphics.hpp>
 
+#include "hero.h"
+
 // IDLE STATE
 void IdleState::handleInput(Hero& hero)
 {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+	{
+		hero.setState(new RunState());
+	}
 }
 
 void IdleState::update(Hero& hero)
@@ -12,6 +18,7 @@ void IdleState::update(Hero& hero)
 
 void IdleState::setTexture(Hero& hero)
 {
+	hero.getSprite().setTexture(hero.getTexture("idle"));
 }
 
 // ATTACK STATE

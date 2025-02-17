@@ -14,7 +14,7 @@ Menu::Menu(sf::RenderWindow* window, SceneManager* sceneManager, const float& fr
 void Menu::setStartText(sf::RenderWindow* window)
 {
     // TITLE
-    m_titleFont.loadFromFile("C:\\Users\\guill\\Downloads\\breathe-fire-ii-font\\BreatheFireIi-2z9W.ttf");
+    m_titleFont.loadFromFile("C:\\Users\\guill\\source\\repos\\IAGame\\resources\\BreatheFireIi-2z9W.ttf");
     m_gameTitle.setFont(m_titleFont);
     m_gameTitle.setString("R I S I N G");
     m_gameTitle.setCharacterSize(100);
@@ -30,7 +30,7 @@ void Menu::setStartText(sf::RenderWindow* window)
     // MENU
     std::vector<std::string> titles = { "P L A Y", "E X I T" };
 
-    m_font.loadFromFile("C:\\Users\\guill\\Downloads\\breathe-fire-ii-font\\BreatheFireIi-2z9W.ttf");
+    m_font.loadFromFile("C:\\Users\\guill\\source\\repos\\IAGame\\resources\\BreatheFireIi-2z9W.ttf");
 
     float boxWidth = 350.f;
     float boxHeight = 80.f;

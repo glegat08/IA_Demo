@@ -28,7 +28,7 @@ Game::~Game()
 void Game::setMapTexture(sf::RenderWindow* window)
 {
     // BACKGROUND
-    m_backgroundTexture.loadFromFile("C:\\Users\\guill\\Downloads\\YogePlatformerDungeon\\Tiles\\Bricks1BG.png");
+    m_backgroundTexture.loadFromFile("C:\\Users\\guill\\source\\repos\\IAGame\\resources\\dungeon\\Tiles\\Bricks1.png");
     m_backgroundShape.setTexture(&m_backgroundTexture);
     m_backgroundShape.setPosition(0, 0);
     m_backgroundShape.setSize(sf::Vector2f(m_backgroundTexture.getSize().x, m_backgroundTexture.getSize().y));
@@ -40,7 +40,7 @@ void Game::setMapTexture(sf::RenderWindow* window)
     }
 
     // GROUND
-    m_mapTexture.loadFromFile("C:\\Users\\guill\\Downloads\\YogePlatformerDungeon\\Tiles\\Floor1.png");
+    m_mapTexture.loadFromFile("C:\\Users\\guill\\source\\repos\\IAGame\\resources\\dungeon\\Tiles\\Floor1.png");
     m_rectangle_shape.setTexture(&m_mapTexture);
     float groundY = window->getSize().y - m_mapTexture.getSize().y;
     m_rectangle_shape.setPosition(0, groundY + 500);
