@@ -1,12 +1,13 @@
 #pragma once
 
+#include "hero.h"
 #include "sceneBase.h"
 
 class Game : public SceneBase
 {
 public:
     Game(sf::RenderWindow* window, const float& framerate);
-    ~Game();
+    ~Game() = default;
 
     // PLAYER
     void setPlayer();
@@ -29,6 +30,7 @@ public:
 
 private:
     int m_enemiesCount;
+    Hero m_player;
 
     // MAP
     sf::RectangleShape m_rectangle_shape;

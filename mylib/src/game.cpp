@@ -3,26 +3,17 @@
 Game::Game(sf::RenderWindow* window, const float& framerate)
 	: SceneBase(window, framerate)
 {
-  //  const int level[120] = 
-  //  {
-  //      2,3,2,3,2,3,2,3,2,3,
-  //      2,3,2,3,2,3,2,3,2,3,
-  //      2,3,2,3,2,3,2,3,2,3,
-  //      2,3,2,3,2,3,2,3,2,3,
-  //      2,3,2,3,2,3,2,3,2,3,
-  //      2,3,2,3,2,3,2,3,2,3
-  //  };
-
-  //  if (!m_tilemap.load("C:\\Users\\guill\\Downloads\\platform_aseprite.png", sf::Vector2u(16, 16), level, 5, 5))
-  //  {
-		//throw std::runtime_error("Failed to load tilemap");
-  //  }
-
     setMapTexture(window);
+    setPlayer();
 }
 
-Game::~Game()
+//Game::~Game()
+//{
+//}
+
+void Game::setPlayer()
 {
+    m_player = Hero();
 }
 
 void Game::setMapTexture(sf::RenderWindow* window)
@@ -56,10 +47,16 @@ void Game::setMapTexture(sf::RenderWindow* window)
 
 void Game::processInput(const sf::Event& event)
 {
+    m_player.handleInput();
 }
 
 void Game::update(const float& deltaTime)
 {
+    if (!m_isGameOver)
+    {
+        m_player.update(deltaTime);
+    }
+
     float currentTime = m_fpsClock.getElapsedTime().asMilliseconds();
     if (currentTime - m_fpsStartTime > 1000)
     {
@@ -75,7 +72,10 @@ void Game::update(const float& deltaTime)
 
 void Game::render()
 {
-	//m_tilemap.draw(*m_renderWindow);
+    if (!m_renderWindow) 
+        return;
+
     m_renderWindow->draw(m_backgroundShape);
+    m_renderWindow->draw(m_player.getSprite());
     m_renderWindow->draw(m_rectangle_shape);
 }

@@ -1,16 +1,30 @@
 #pragma once
 
 #include "state.h"
+#include <map>
+
+class Hero;
+
+namespace HeroStateNames
+{
+    enum class stateName;
+}
 
 class HeroState
 {
 public:
-	IdleState idle();
-	AttackState attack();
-	JumpState jump();
-	BlockState block();
-	RunState run();
+    HeroState();
+    ~HeroState();
+
+    using StateEnum = HeroStateNames::stateName;
+
+    void setState(Hero* hero, HeroStateNames::stateName newState);
+    std::shared_ptr<IState> getCurrentState() const { return m_currentState; }
+
+    void handleInput(Hero& hero);
+    void update(Hero& hero, float deltaTime);
 
 private:
-	IState* m_currentState;
+    std::map<StateEnum, std::shared_ptr<IState>> m_states;
+    std::shared_ptr<IState> m_currentState;
 };

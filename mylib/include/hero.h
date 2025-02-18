@@ -2,12 +2,27 @@
 #include "gameObject.h"
 #include "heroState.h"
 
+namespace HeroStateNames
+{
+	enum class stateName
+	{
+		idle,
+		run,
+		jump,
+		attack,
+		dodge,
+		hurt,
+		death
+	};
+}
+
 class Hero : public gameObject
 {
 public:
 	Hero();
 	~Hero();
 
+	using stateName = HeroStateNames::stateName;
 
 	// BOOL METHOD
 	bool isAlive() override;
@@ -16,43 +31,26 @@ public:
 	bool isInvulnerable() override;
 
 	// VOID METHOD
-	void setTexture() override;
-	void updateAnim() override;
-	void movement() override;
 	void takeDamage(int damage) override;
-	void getWeapon() override;
 	void setInvulnerable(float duration) override;
 	void updateInvulnerabilityEffect();
 	void attacking();
-	void setState(IState* newState);
+	void setState(stateName newState);
 	void handleInput();
-	void update();
+	void update(float deltaTime);
 	void draw(sf::RenderWindow& window);
-
-	int getShield() override;
 	int getHp() override;
 
-	sf::Texture& getTexture(const std::string& stateName);
+	sf::Texture& getTexture(const stateName& stateName_);
 	sf::Sprite& getSprite();
 
-
-private:
 	friend class Game;
+private:
 	int m_health = 100;
 
 	bool m_isIdle;
 	bool m_isAttacking;
 
-	// ANIMATION
-	sf::Clock m_movementClock;
-	sf::Clock m_movementAnimation;
-	sf::Clock m_animationClock;
-	const int m_frameWidth = 64;
-	const int m_frameHeight = 64;
-	const int m_numFrames = 8;
-	const int m_numDirections = 4;
-	int m_currentFrame = 0;
-	int m_currentDirection = 0;
 	float m_speed = 200.f;
 
 	// GAMEPLAY
@@ -63,6 +61,7 @@ private:
 	sf::FloatRect m_hitbox;
 
 	sf::Sprite m_sprites;
-	std::map<std::string, sf::Texture> m_textures;
-	IState* m_currentState;
+	std::map<stateName, sf::Texture> m_textures;
+	HeroState m_stateManager;
+	stateName m_currentStateName;
 };
