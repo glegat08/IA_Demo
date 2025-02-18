@@ -2,6 +2,7 @@
 #include <SFML/System.hpp>
 
 class Hero;
+class Boss;
 
 class IState
 {
@@ -102,4 +103,30 @@ protected:
 	int m_currentFrame;
 	float m_frameTime;
 	float m_elapsedTime;
+};
+
+
+//////////////////////////////////////////////////////////////////////////
+
+class IBossState
+{
+public:
+	virtual ~IBossState() = default;
+	virtual void update(Boss& boss, float deltaTime) = 0;
+	virtual void setTexture(Boss& boss) = 0;
+};
+
+class BossIdleState : public IBossState
+{
+public:
+	void update(Boss& boss, float deltaTime) override;
+	void setTexture(Boss& boss) override;
+
+protected:
+	const int m_frameWidth = 128;
+	const int m_frameHeight = 108;
+	int m_frameCount = 6;
+	int m_currentFrame = 0;
+	float m_frameTime = 0.1f;
+	sf::Clock m_elapsedTime;
 };

@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "hero.h"
+#include "boss.h"
 
 // IDLE STATE
 void IdleState::handleInput(Hero& hero)
@@ -122,4 +123,30 @@ void DodgeState::update(Hero& hero, float deltaTime)
 
 void DodgeState::setTexture(Hero& hero)
 {
+}
+
+
+////////////////////////////////////////////////////////////////////
+///
+///// IDLE STATE
+
+
+
+
+void BossIdleState::update(Boss& boss, float deltaTime)
+{
+	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
+	{
+		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
+		m_elapsedTime.restart();
+
+		sf::IntRect frameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
+		boss.getSprite().setTextureRect(frameRect);
+	}
+}
+
+void BossIdleState::setTexture(Boss& boss)
+{
+	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Idle));
+	boss.getSprite().setScale(2.f, 2.f);
 }
