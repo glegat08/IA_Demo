@@ -1,70 +1,56 @@
-#ifndef HERO_H
-#define HERO_H
+#pragma once
+#include "gameObject.h"
+#include "heroState.h"
 
-#include "GameObject.h"
-#include "rangedWeapon.h"
-#include "closeWeapon.h"
+namespace HeroStateNames
+{
+	enum class stateName
+	{
+		idle,
+		run,
+		jump,
+		attack,
+		dodge,
+		hurt,
+		death
+	};
+}
 
-#include <vector>
-#include <memory>
-
-class IEnemy;
-class PlayerProjectile;
-
-class Hero : public GameObject
+class Hero : public gameObject
 {
 public:
 	Hero();
+	~Hero();
+
+	using stateName = HeroStateNames::stateName;
 
 	// BOOL METHOD
-	bool isAlive() const override;
-	bool isShooting() const override;
-	bool isAttacking() const override;
-	bool isInvulnerable() const override;
+	bool isAlive() override;
+	bool isShooting() override;
+	bool isAttacking() override;
+	bool isInvulnerable() override;
 
 	// VOID METHOD
-	void setTexture() override;
-	void updateAnim() override;
-	void movement() override;
-	int getShield() const override;
-	int getHp() const override;
 	void takeDamage(int damage) override;
-	void getWeapon() override;
-	void switchWeapon() override;
 	void setInvulnerable(float duration) override;
 	void updateInvulnerabilityEffect();
-	void shoot(std::vector<std::unique_ptr<PlayerProjectile>>& projectiles, sf::RenderWindow* window);
 	void attacking();
+	void setState(stateName newState);
+	void handleInput();
+	void update(float deltaTime);
+	void draw(sf::RenderWindow& window);
+	int getHp() override;
 
-	// OTHER METHOD
-	sf::Vector2f getPlayerPosition();
-	sf::Vector2f getPlayerCenter();
-	const sf::Sprite& getPlayerSprite() const;
-	sf::FloatRect getHitbox() const;
+	sf::Texture& getTexture(const stateName& stateName_);
+	sf::Sprite& getSprite();
 
-	// PUBLIC PARAMETERS
-	sf::Texture m_texture;
-	sf::Texture m_idleTexture;
-	sf::Texture m_attackTexture;
-
-	sf::Sprite m_playerSprite;
-	sf::Sprite m_idleSprite;
-	sf::Sprite m_attackSprite;
+	friend class Game;
+private:
+	int m_health = 100;
 
 	bool m_isIdle;
 	bool m_isAttacking;
 
-private:
-	// ANIMATION
-	sf::Clock m_movementClock;
-	sf::Clock m_movementAnimation;
-	sf::Clock m_animationClock;
-	const int m_frameWidth = 64;
-	const int m_frameHeight = 64;
-	const int m_numFrames = 8;
-	const int m_numDirections = 4;
-	int m_currentFrame = 0;
-	int m_currentDirection = 0;
 	float m_speed = 200.f;
 
 	// GAMEPLAY
@@ -74,7 +60,8 @@ private:
 	bool m_isInvulnerable = false;
 	sf::FloatRect m_hitbox;
 
-	int m_health = 100;
+	sf::Sprite m_sprites;
+	std::map<stateName, sf::Texture> m_textures;
+	HeroState m_stateManager;
+	stateName m_currentStateName;
 };
-
-#endif // HERO_H
