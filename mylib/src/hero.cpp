@@ -1,4 +1,4 @@
-?#include "hero.h"
+#include "hero.h"
 
 Hero::Hero() : m_currentStateName(stateName::idle)
 {

@@ -20,11 +20,11 @@ public:
     using StateEnumP1 = BossStateNames::BossStatePhaseOne;
     using StateEnumP2 = BossStateNames::BossStatePhaseTwo;
 
-    void setState(Hero* hero, BossStateNames::BossStatePhaseOne newState);
+    void setState(Boss* boss, BossStateNames::BossStatePhaseOne newState);
+    void setState(Boss* boss, BossStateNames::BossStatePhaseTwo newState); // risk ???
     std::shared_ptr<IState> getCurrentState() const { return m_currentState; }
 
-    void handleInput(Hero& hero);
-    void update(Hero& hero, float deltaTime);
+    void update(Boss& boss, float deltaTime);
 
 private:
     std::map<StateEnumP1, std::shared_ptr<IState>> m_statesP1;
