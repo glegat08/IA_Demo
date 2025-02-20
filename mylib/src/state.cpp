@@ -145,7 +145,7 @@ void BossIdleState::update(Boss& boss, float deltaTime)
 	}
 }
 
-void BossIdleState::setTexture(Boss& boss)
+void BossIdleState::setBossTexture(Boss& boss)
 {
 	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Idle));
 	boss.getSprite().setScale(2.f, 2.f);

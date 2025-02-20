@@ -33,7 +33,7 @@ void BossState::setState(Boss* boss, BossStateNames::BossStatePhaseOne newState)
 {
     if (m_statesP1.find(newState) != m_statesP1.end()) {
         m_currentState = m_statesP1[newState];
-        m_currentState->setTexture(*boss);
+        m_currentState->setBossTexture(*boss);
     }
 }
 
@@ -41,7 +41,7 @@ void BossState::setState(Boss* boss, BossStateNames::BossStatePhaseTwo newState)
 {
     if (m_statesP2.find(newState) != m_statesP2.end()) {
         m_currentState = m_statesP2[newState];
-        m_currentState->setTexture(*boss);
+        m_currentState->setBossTexture(*boss);
     }
 }
 

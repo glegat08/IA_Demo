@@ -113,14 +113,14 @@ class IBossState
 public:
 	virtual ~IBossState() = default;
 	virtual void update(Boss& boss, float deltaTime) = 0;
-	virtual void setTexture(Boss& boss) = 0;
+	virtual void setBossTexture(Boss& boss) = 0;
 };
 
 class BossIdleState : public IBossState
 {
 public:
 	void update(Boss& boss, float deltaTime) override;
-	void setTexture(Boss& boss) override;
+	void setBossTexture(Boss& boss) override;
 
 protected:
 	const int m_frameWidth = 128;
