@@ -13,7 +13,7 @@ Game::Game(sf::RenderWindow* window, const float& framerate)
 
 void Game::setPlayer()
 {
-    m_player = Hero();
+    m_player.setState(Hero::stateName::idle);
 }
 
 void Game::setMapTexture(sf::RenderWindow* window)
@@ -76,6 +76,6 @@ void Game::render()
         return;
 
     m_renderWindow->draw(m_backgroundShape);
-    m_renderWindow->draw(m_player.getSprite());
     m_renderWindow->draw(m_rectangle_shape);
+    m_renderWindow->draw(m_player.getSprite());
 }

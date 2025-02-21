@@ -19,7 +19,7 @@ public:
     using StateEnum = HeroStateNames::stateName;
 
     void setState(Hero* hero, HeroStateNames::stateName newState);
-    std::shared_ptr<IState> getCurrentState() const { return m_currentState; }
+    std::shared_ptr<IState> getCurrentState() const;
 
     void handleInput(Hero& hero);
     void update(Hero& hero, float deltaTime);

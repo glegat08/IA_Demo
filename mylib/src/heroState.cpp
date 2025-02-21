@@ -30,6 +30,11 @@ void HeroState::setState(Hero* hero, HeroStateNames::stateName newState)
         m_currentState->setTexture(*hero);
 }
 
+std::shared_ptr<IState> HeroState::getCurrentState() const
+{
+    return m_currentState;
+}
+
 void HeroState::handleInput(Hero& hero)
 {
     if (m_currentState != nullptr)
