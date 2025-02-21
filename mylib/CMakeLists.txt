@@ -19,6 +19,9 @@ set(SOURCES
     ${SOURCE_DIR}/state.cpp
     ${SOURCE_DIR}/heroState.cpp
     ${SOURCE_DIR}/bossBehaviorTree.cpp
+    ${SOURCE_DIR}/strategy.cpp
+    ${SOURCE_DIR}/myNodes.cpp
+    ${SOURCE_DIR}/actionNode.cpp
 )
 
 set(HEADERS
@@ -37,6 +40,9 @@ set(HEADERS
     ${HEADER_DIR}/state.h
     ${HEADER_DIR}/heroState.h
     ${HEADER_DIR}/bossBehaviorTree.h
+    ${HEADER_DIR}/strategy.h
+    ${HEADER_DIR}/myNodes.h
+    ${HEADER_DIR}/actionNode.h
 )
 
 add_library(${PROJECT_NAME}
