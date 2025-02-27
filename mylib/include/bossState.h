@@ -21,8 +21,8 @@ public:
     using StateEnumP2 = BossStateNames::BossStatePhaseTwo;
 
     void setState(Boss* boss, BossStateNames::BossStatePhaseOne newState); 
-    void setState(Boss* boss, BossStateNames::BossStatePhaseTwo newState); // risk ???
-    std::shared_ptr<IBossState> getCurrentState() const { return m_currentState; }
+    void setState2(Boss* boss, BossStateNames::BossStatePhaseTwo newState);
+    std::shared_ptr<IBossState> getCurrentState() const;
 
     void update(Boss& boss, float deltaTime);
 

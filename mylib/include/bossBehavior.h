@@ -34,6 +34,7 @@ namespace BT
 
         Status tick() override
         {
+            getGameObject()->setState(Boss::BossStatePhaseOne::Transformation);
             getGameObject()->switchToPhaseTwo();
             return Success;
         }
@@ -58,19 +59,55 @@ namespace BT
 
         Status tick() override
         {
-            getGameObject()->setState(Boss::BossStatePhaseTwo::AttackFlame1);
+            getGameObject()->setState2(Boss::BossStatePhaseTwo::AttackFlame1);
             return Success;
         }
     };
 
-    class Attack2 : public BehaviorNodeDecorator<Boss, IActionNode>
+    class BossAttack2 : public BehaviorNodeDecorator<Boss, IActionNode>
     {
     public:
-        Attack2(ICompositeNode* parent) : BehaviorNodeDecorator<Boss, IActionNode>(parent) {}
+        BossAttack2(ICompositeNode* parent) : BehaviorNodeDecorator<Boss, IActionNode>(parent) {}
 
         Status tick() override
         {
-            getGameObject()->attacking();
+            getGameObject()->setState(Boss::BossStatePhaseOne::Attack2);
+            return Success;
+        }
+    };
+
+    class BossAttackFlame2 : public BehaviorNodeDecorator<Boss, IActionNode>
+    {
+    public:
+        BossAttackFlame2(ICompositeNode* parent) : BehaviorNodeDecorator<Boss, IActionNode>(parent) {}
+
+        Status tick() override
+        {
+            getGameObject()->setState2(Boss::BossStatePhaseTwo::AttackFlame2);
+            return Success;
+        }
+    };
+
+    class BossAttack3 : public BehaviorNodeDecorator<Boss, IActionNode>
+    {
+    public:
+        BossAttack3(ICompositeNode* parent) : BehaviorNodeDecorator<Boss, IActionNode>(parent) {}
+
+        Status tick() override
+        {
+            getGameObject()->setState(Boss::BossStatePhaseOne::Attack3);
+            return Success;
+        }
+    };
+
+    class BossAttackFlame3 : public BehaviorNodeDecorator<Boss, IActionNode>
+    {
+    public:
+        BossAttackFlame3(ICompositeNode* parent) : BehaviorNodeDecorator<Boss, IActionNode>(parent) {}
+
+        Status tick() override
+        {
+            getGameObject()->setState2(Boss::BossStatePhaseTwo::AttackFlame3);
             return Success;
         }
     };
@@ -87,6 +124,18 @@ namespace BT
         }
     };
 
+    class FlameJumpAttack : public BehaviorNodeDecorator<Boss, IActionNode>
+    {
+    public:
+        FlameJumpAttack(ICompositeNode* parent) : BehaviorNodeDecorator<Boss, IActionNode>(parent) {}
+
+        Status tick() override
+        {
+            getGameObject()->setState2(Boss::BossStatePhaseTwo::JumpAttackFlame);
+            return Success;
+        }
+    };
+
     class RunTowardsPlayer : public BehaviorNodeDecorator<Boss, IActionNode>
     {
     public:
@@ -99,6 +148,18 @@ namespace BT
         }
     };
 
+    class RunFlameTowardsPlayer : public BehaviorNodeDecorator<Boss, IActionNode>
+    {
+    public:
+        RunFlameTowardsPlayer(ICompositeNode* parent) : BehaviorNodeDecorator<Boss, IActionNode>(parent) {}
+
+        Status tick() override
+        {
+            getGameObject()->setState2(Boss::BossStatePhaseTwo::RunFlame);
+            return Success;
+        }
+    };
+
     class Idle : public BehaviorNodeDecorator<Boss, IActionNode>
     {
     public:
@@ -107,6 +168,54 @@ namespace BT
         Status tick() override
         {
             getGameObject()->setState(Boss::BossStatePhaseOne::Idle);
+            return Success;
+        }
+    };
+
+    class IdleFlame : public BehaviorNodeDecorator<Boss, IActionNode>
+    {
+    public:
+        IdleFlame(ICompositeNode* parent) : BehaviorNodeDecorator<Boss, IActionNode>(parent) {}
+
+        Status tick() override
+        {
+            getGameObject()->setState2(Boss::BossStatePhaseTwo::IdleFlame);
+            return Success;
+        }
+    };
+
+    class Hurt : public BehaviorNodeDecorator<Boss, IActionNode>
+    {
+    public:
+        Hurt(ICompositeNode* parent) : BehaviorNodeDecorator<Boss, IActionNode>(parent) {}
+
+        Status tick() override
+        {
+            getGameObject()->setState(Boss::BossStatePhaseOne::Hurt);
+            return Success;
+        }
+    };
+
+    class HurtFlame : public BehaviorNodeDecorator<Boss, IActionNode>
+    {
+    public:
+        HurtFlame(ICompositeNode* parent) : BehaviorNodeDecorator<Boss, IActionNode>(parent) {}
+
+        Status tick() override
+        {
+            getGameObject()->setState2(Boss::BossStatePhaseTwo::HurtFlame);
+            return Success;
+        }
+    };
+
+    class Death : public BehaviorNodeDecorator<Boss, IActionNode>
+    {
+    public:
+        Death(ICompositeNode* parent) : BehaviorNodeDecorator<Boss, IActionNode>(parent) {}
+
+        Status tick() override
+        {
+            getGameObject()->setState2(Boss::BossStatePhaseTwo::Death);
             return Success;
         }
     };

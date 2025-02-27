@@ -116,17 +116,246 @@ public:
 	virtual void setBossTexture(Boss& boss) = 0;
 };
 
+///////////////////////   PHASE 1  //////////////////////////////////////
+
 class BossIdleState : public IBossState
 {
 public:
-	void update(Boss& boss, float deltaTime) override;
-	void setBossTexture(Boss& boss) override;
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
 
 protected:
-	const int m_frameWidth = 128;
-	const int m_frameHeight = 108;
-	int m_frameCount = 6;
-	int m_currentFrame = 0;
-	float m_frameTime = 0.1f;
-	sf::Clock m_elapsedTime;
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 6;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.1f;
+    sf::Clock m_elapsedTime;
+};
+
+class BossRunState : public IBossState
+{
+public:
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
+
+protected:
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 8;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.08f;
+    sf::Clock m_elapsedTime;
+};
+
+class BossHurtState : public IBossState
+{
+public:
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
+
+protected:
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 4;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.12f;
+    sf::Clock m_elapsedTime;
+};
+
+class BossFirstAttackState : public IBossState
+{
+public:
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
+
+protected:
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 7;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.09f;
+    sf::Clock m_elapsedTime;
+};
+
+class BossSecondAttackState : public IBossState
+{
+public:
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
+
+protected:
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 6;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.1f;
+    sf::Clock m_elapsedTime;
+};
+
+class BossThirdAttackState : public IBossState
+{
+public:
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
+
+protected:
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 7;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.09f;
+    sf::Clock m_elapsedTime;
+};
+
+class BossJumpState : public IBossState
+{
+public:
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
+
+protected:
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 12;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.07f;
+    sf::Clock m_elapsedTime;
+};
+
+class BossTransformationState : public IBossState
+{
+public:
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
+
+protected:
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 17;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.08f;
+    sf::Clock m_elapsedTime;
+};
+
+////////////////////////////////////////////////////////////////
+
+class BossIdleFlameState : public IBossState
+{
+public:
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
+
+protected:
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 6;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.1f;
+    sf::Clock m_elapsedTime;
+};
+
+class BossRunFlameState : public IBossState
+{
+public:
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
+
+protected:
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 8;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.08f;
+    sf::Clock m_elapsedTime;
+};
+
+class BossHurtFlameState : public IBossState
+{
+public:
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
+
+protected:
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 4;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.12f;
+    sf::Clock m_elapsedTime;
+};
+
+class BossFirstAttackFlameState : public IBossState
+{
+public:
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
+
+protected:
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 7;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.09f;
+    sf::Clock m_elapsedTime;
+};
+
+class BossSecondAttackFlameState : public IBossState
+{
+public:
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
+
+protected:
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 6;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.1f;
+    sf::Clock m_elapsedTime;
+};
+
+class BossThirdAttackFlameState : public IBossState
+{
+public:
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
+
+protected:
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 7;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.09f;
+    sf::Clock m_elapsedTime;
+};
+
+class BossJumpFlameState : public IBossState
+{
+public:
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
+
+protected:
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 12;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.07f;
+    sf::Clock m_elapsedTime;
+};
+
+class BossDeathState : public IBossState
+{
+public:
+    void update(Boss& boss, float deltaTime) override;
+    void setBossTexture(Boss& boss) override;
+
+protected:
+    const int m_frameWidth = 128;
+    const int m_frameHeight = 108;
+    int m_frameCount = 10;
+    int m_currentFrame = 0;
+    float m_frameTime = 0.1f;
+    sf::Clock m_elapsedTime;
 };
