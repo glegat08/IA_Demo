@@ -1,9 +1,12 @@
 #include "game.h"
 
+#include "resourceManager.h"
+
 Game::Game(sf::RenderWindow* window, const float& framerate)
 	: SceneBase(window, framerate)
 {
-    setMapTexture(window);
+    setBackground(window);
+    setGroundTexture(window);
     setPlayer();
 }
 
@@ -13,13 +16,23 @@ Game::Game(sf::RenderWindow* window, const float& framerate)
 
 void Game::setPlayer()
 {
-    m_player.setState(Hero::stateName::idle);
+    m_player.getSprite().setPosition(100, getGroundHitbox().top - m_player.getHitbox().height);
 }
 
-void Game::setMapTexture(sf::RenderWindow* window)
+void Game::checkCollision()
 {
-    // BACKGROUND
-    m_backgroundTexture.loadFromFile("C:\\Users\\guill\\source\\repos\\IAGame\\resources\\dungeon\\Tiles\\Bricks1.png");
+    if (m_player.getHitbox().top + m_player.getHitbox().height > getGroundHitbox().top)
+    {
+        m_player.getSprite().setPosition(m_player.getPlayerPosition().x, getGroundHitbox().top - m_player.getHitbox().height);
+        m_player.setOnGround(true);
+    }
+    else
+        m_player.setOnGround(false);
+}
+
+void Game::setBackground(sf::RenderWindow* window)
+{
+    m_backgroundTexture.loadFromFile(PathManager::getResourcePath("dungeon\\Tiles\\Bricks1.png"));
     m_backgroundShape.setTexture(&m_backgroundTexture);
     m_backgroundShape.setPosition(0, 0);
     m_backgroundShape.setSize(sf::Vector2f(m_backgroundTexture.getSize().x, m_backgroundTexture.getSize().y));
@@ -29,20 +42,33 @@ void Game::setMapTexture(sf::RenderWindow* window)
         m_backgroundShape.setTextureRect(sf::IntRect(0, 0, window->getSize().x + 8000, m_backgroundTexture.getSize().y + 4000));
         m_backgroundShape.setSize(sf::Vector2f(window->getSize().x, window->getSize().y));
     }
+}
 
-    // GROUND
-    m_mapTexture.loadFromFile("C:\\Users\\guill\\source\\repos\\IAGame\\resources\\dungeon\\Tiles\\Floor1.png");
+void Game::setGroundTexture(sf::RenderWindow* window)
+{
+    m_mapTexture.loadFromFile(PathManager::getResourcePath("dungeon\\Tiles\\Floor1.png"));
     m_rectangle_shape.setTexture(&m_mapTexture);
-    float groundY = window->getSize().y - m_mapTexture.getSize().y;
-    m_rectangle_shape.setPosition(0, groundY + 500);
+
+    float groundY = window->getSize().y - 60;
+    m_rectangle_shape.setPosition(0, groundY);
     m_rectangle_shape.setSize(sf::Vector2f(m_mapTexture.getSize().x, m_mapTexture.getSize().y));
+
     if (window->getSize().x > m_mapTexture.getSize().x)
     {
         m_mapTexture.setRepeated(true);
-        m_rectangle_shape.setTextureRect(sf::IntRect(0, 0, window->getSize().x - 8000, m_mapTexture.getSize().y + 200));
+        m_rectangle_shape.setTextureRect(sf::IntRect(0, 0, window->getSize().x + 3000, m_mapTexture.getSize().y + 100));
         m_rectangle_shape.setSize(sf::Vector2f(window->getSize().x, m_mapTexture.getSize().y));
     }
+}
 
+sf::FloatRect Game::getGroundHitbox()
+{
+    return m_rectangle_shape.getGlobalBounds();
+}
+
+sf::FloatRect Game::getPlatformHitbox()
+{
+    return m_platform.getGlobalBounds();
 }
 
 void Game::processInput(const sf::Event& event)
@@ -52,19 +78,18 @@ void Game::processInput(const sf::Event& event)
 
 void Game::update(const float& deltaTime)
 {
-    if (!m_isGameOver)
-    {
         m_player.update(deltaTime);
-    }
 
-    float currentTime = m_fpsClock.getElapsedTime().asMilliseconds();
-    if (currentTime - m_fpsStartTime > 1000)
-    {
-        m_fpsText.setString("FPS: " + std::to_string(m_fpsCounter));
-        m_fpsStartTime = currentTime;
-        m_fpsCounter = 0;
-    }
-    m_fpsCounter++;
+        float currentTime = m_fpsClock.getElapsedTime().asMilliseconds();
+        if (currentTime - m_fpsStartTime > 1000)
+        {
+            m_fpsText.setString("FPS: " + std::to_string(m_fpsCounter));
+            m_fpsStartTime = currentTime;
+            m_fpsCounter = 0;
+        }
+        m_fpsCounter++;
+
+    checkCollision();
 
     if (m_isGameOver)
         return;
@@ -78,4 +103,28 @@ void Game::render()
     m_renderWindow->draw(m_backgroundShape);
     m_renderWindow->draw(m_rectangle_shape);
     m_renderWindow->draw(m_player.getSprite());
+
+    drawHitboxes();
+}
+
+void Game::drawHitboxes()
+{
+    sf::FloatRect groundRect = getGroundHitbox();
+    sf::RectangleShape groundHitboxShape;
+    groundHitboxShape.setPosition(groundRect.left, groundRect.top);
+    groundHitboxShape.setSize(sf::Vector2f(groundRect.width, groundRect.height));
+    groundHitboxShape.setFillColor(sf::Color::Transparent);
+    groundHitboxShape.setOutlineColor(sf::Color::Red);
+    groundHitboxShape.setOutlineThickness(2.f);
+
+    sf::FloatRect playerRect = m_player.getHitbox();
+    sf::RectangleShape playerHitboxShape;
+    playerHitboxShape.setPosition(playerRect.left, playerRect.top);
+    playerHitboxShape.setSize(sf::Vector2f(playerRect.width, playerRect.height));
+    playerHitboxShape.setFillColor(sf::Color::Transparent);
+    playerHitboxShape.setOutlineColor(sf::Color::Green);
+    playerHitboxShape.setOutlineThickness(2.f);
+
+    m_renderWindow->draw(groundHitboxShape);
+    m_renderWindow->draw(playerHitboxShape);
 }

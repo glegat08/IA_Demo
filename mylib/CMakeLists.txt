@@ -18,6 +18,7 @@ set(SOURCES
     ${SOURCE_DIR}/gameObject.cpp
     ${SOURCE_DIR}/heroState.cpp
     ${SOURCE_DIR}/state.cpp
+    ${SOURCE_DIR}/resourceManager.cpp
 )
 
 set(HEADERS
@@ -35,6 +36,7 @@ set(HEADERS
     ${HEADER_DIR}/gameObject.h
     ${HEADER_DIR}/heroState.h
     ${HEADER_DIR}/state.h
+    ${HEADER_DIR}/resourceManager.h
 )
 
 add_library(${PROJECT_NAME}

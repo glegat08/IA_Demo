@@ -1,5 +1,6 @@
 #include "menu.h"
 #include "game.h"
+#include "resourceManager.h"
 #include "SceneManager.h"
 
 // START MENU
@@ -14,7 +15,7 @@ Menu::Menu(sf::RenderWindow* window, SceneManager* sceneManager, const float& fr
 void Menu::setStartText(sf::RenderWindow* window)
 {
     // TITLE
-    m_titleFont.loadFromFile("C:\\Users\\guill\\source\\repos\\IAGame\\resources\\BreatheFireIi-2z9W.ttf");
+    m_titleFont.loadFromFile(PathManager::getResourcePath("BreatheFireIi-2z9W.ttf"));
     m_gameTitle.setFont(m_titleFont);
     m_gameTitle.setString("R I S I N G");
     m_gameTitle.setCharacterSize(100);
@@ -30,7 +31,7 @@ void Menu::setStartText(sf::RenderWindow* window)
     // MENU
     std::vector<std::string> titles = { "P L A Y", "E X I T" };
 
-    m_font.loadFromFile("C:\\Users\\guill\\source\\repos\\IAGame\\resources\\BreatheFireIi-2z9W.ttf");
+    m_font.loadFromFile(PathManager::getResourcePath("BreatheFireIi-2z9W.ttf"));
 
     float boxWidth = 350.f;
     float boxHeight = 80.f;
@@ -50,7 +51,7 @@ void Menu::setStartText(sf::RenderWindow* window)
 
 void Menu::setBackground(sf::RenderWindow* window)
 {
-    m_background.loadFromFile("C:\\Users\\guill\\Downloads\\Dungeon_Backgrounds\\dungeon_background_5.png");
+    m_background.loadFromFile(PathManager::getResourcePath("dungeon_background_5.png"));
     m_backgroundSprite.setTexture(m_background);
     m_backgroundSprite.setPosition(m_renderWindow->getPosition().x, m_renderWindow->getPosition().y);
     m_backgroundSprite.setScale(1.3, 1.1);
@@ -58,7 +59,7 @@ void Menu::setBackground(sf::RenderWindow* window)
 
 void Menu::playAudio(sf::RenderWindow* window)
 {
-    m_music.openFromFile("C:\\Users\\guill\\Downloads\\dungeonRising.mp3");
+    m_music.openFromFile(PathManager::getResourcePath("dungeonRising.mp3"));
     m_music.play();
     m_music.setVolume(50);
     m_music.setLoop(true);
