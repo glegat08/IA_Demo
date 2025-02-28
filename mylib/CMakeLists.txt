@@ -21,6 +21,7 @@ set(SOURCES
     ${SOURCE_DIR}/bossBehavior.cpp
     ${SOURCE_DIR}/strategy.cpp
     ${SOURCE_DIR}/behaviorTree.cpp
+    ${SOURCE_DIR}/resourceManager.cpp
 )
 
 set(HEADERS
@@ -41,6 +42,7 @@ set(HEADERS
     ${HEADER_DIR}/bossBehavior.h
     ${HEADER_DIR}/strategy.h
     ${HEADER_DIR}/behaviorTree.h
+    ${HEADER_DIR}/resourceManager.h
 )
 
 add_library(${PROJECT_NAME}
