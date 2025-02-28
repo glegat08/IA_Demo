@@ -104,7 +104,7 @@ namespace BossStateNames
 //    BossState m_stateManager;
 //};
 
-class Boss : public gameObject
+class Boss : public IGameObject
 {
 public:
     using BossStatePhaseOne = BossStateNames::BossStatePhaseOne;
@@ -146,7 +146,7 @@ private:
     int m_health;
     bool m_invulnerable;
     float m_invulnerableDuration;
-    BT::RootNode<Boss> m_rootNode;
+    BT::RootNode m_rootNode;
 
     sf::Sprite m_sprites;
 	std::map<BossStatePhaseOne, sf::Texture> m_texturesP1;

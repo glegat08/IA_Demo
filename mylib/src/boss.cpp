@@ -4,6 +4,7 @@
 #include <array>
 #include <iostream>
 
+#include "behaviorTree.h"
 #include "bossBehavior.h"
 #include "game.h"
 
@@ -176,9 +177,11 @@ Boss::Boss(Game& game)
     , m_phaseTwoActive(false)
     , m_invulnerable(false)
     , m_invulnerableDuration(0.0f)
-    , m_rootNode(this)
+	, m_rootNode(this)
 {
     auto* behavior = new BT::Sequence(&m_rootNode);
+    if (!behavior)
+        throw std::runtime_error("memory allocation error");
 
     // Phase 1 actions
     new BT::BossAttack1(behavior);

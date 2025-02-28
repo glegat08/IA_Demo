@@ -18,7 +18,7 @@ namespace HeroStateNames
 	};
 }
 
-class Hero : public gameObject
+class Hero : public IGameObject
 {
 public:
 	Hero();

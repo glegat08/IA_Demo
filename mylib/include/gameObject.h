@@ -1,11 +1,11 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-class gameObject
+class IGameObject
 {
 public:
-    gameObject() = default;
-    virtual ~gameObject() = default;
+    IGameObject() = default;
+    virtual ~IGameObject() = default;
 
     // Pure virtual methods (state checks)
     virtual bool isAlive() = 0;            // Check if the object is alive
