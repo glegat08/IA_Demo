@@ -2,6 +2,7 @@
 #define BOSS_H
 
 #include "behaviorTree.h"
+#include "bossState.h"
 #include "gameObject.h"
 #include "game.h"
 
@@ -115,6 +116,9 @@ public:
     void update();
     void findValidTarget();
     void switchToPhaseTwo();
+    void loadTextures();
+    void updateInvulnerabilityEffect();
+    void attacking();
 
     void setState(BossStatePhaseOne newState);
     void setState2(BossStatePhaseTwo newState);
@@ -128,6 +132,8 @@ public:
     void setInvulnerable(float duration) override;
 
     void setHp(int health);
+    int getHp() const;
+    void draw(sf::RenderWindow& window) const; 
 
     BT::Status tick();
 
@@ -144,11 +150,17 @@ private:
     Game& m_game;
     Hero* m_currentTarget;
     int m_health;
-    bool m_invulnerable;
+    sf::Clock m_invulnerableClock;
+    sf::Clock m_blinkClock;
+    bool m_isInvulnerable;
+    bool m_isAttacking;
     float m_invulnerableDuration;
     BT::RootNode m_rootNode;
 
     sf::Sprite m_sprites;
+    //BossState m_stateManager;
+    BossStatePhaseOne m_currentStateName;
+    BossStatePhaseTwo m_currentStateNameP2;
 	std::map<BossStatePhaseOne, sf::Texture> m_texturesP1;
 	std::map<BossStatePhaseTwo, sf::Texture> m_texturesP2;
 };

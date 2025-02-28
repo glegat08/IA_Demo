@@ -1,4 +1,5 @@
 #include "resourceManager.h"
+#include <iostream>
 
 std::filesystem::path PathManager::s_resourceDirectory;
 
@@ -26,5 +27,7 @@ void PathManager::initialize(const std::string& executablePath)
 
 std::string PathManager::getResourcePath(const std::string& relativePath)
 {
-    return (PathManager::s_resourceDirectory / relativePath).string();
+    std::string fullPath = (PathManager::s_resourceDirectory / relativePath).string();
+    std::cout << "Loading resource: " << fullPath << std::endl; // Debug
+    return fullPath;
 }
