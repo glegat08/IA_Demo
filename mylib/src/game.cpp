@@ -1,5 +1,5 @@
 #include "game.h"
-
+#include "boss.h"
 #include "resourceManager.h"
 
 Game::Game(sf::RenderWindow* window, const float& framerate)
@@ -8,6 +8,7 @@ Game::Game(sf::RenderWindow* window, const float& framerate)
     setBackground(window);
     setGroundTexture(window);
     setPlayer();
+    setBoss();
 }
 
 //Game::~Game()
@@ -17,6 +18,11 @@ Game::Game(sf::RenderWindow* window, const float& framerate)
 void Game::setPlayer()
 {
     m_player.getSprite().setPosition(100, getGroundHitbox().top - m_player.getHitbox().height);
+}
+
+void Game::setBoss()
+{
+    m_boss->getSprite().setPosition(500, getGroundHitbox().top - m_player.getHitbox().height);
 }
 
 void Game::checkCollision()
@@ -79,6 +85,7 @@ void Game::processInput(const sf::Event& event)
 void Game::update(const float& deltaTime)
 {
     m_player.update(deltaTime);
+    m_boss->update(deltaTime);
 
     float currentTime = m_fpsClock.getElapsedTime().asMilliseconds();
     if (currentTime - m_fpsStartTime > 1000)
@@ -103,6 +110,7 @@ void Game::render()
     m_renderWindow->draw(m_backgroundShape);
     m_renderWindow->draw(m_rectangle_shape);
     m_renderWindow->draw(m_player.getSprite());
+    m_renderWindow->draw(m_boss->getSprite());
 
     drawHitboxes();
 }

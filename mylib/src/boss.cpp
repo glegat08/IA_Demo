@@ -4,7 +4,7 @@
 #include "resourceManager.h"
 #include "game.h"
 
-Boss::Boss(Game& game)
+Boss::Boss(Game* game)
     : m_game(game)
     , m_currentTarget(nullptr)
     , m_health(300)
@@ -46,7 +46,7 @@ Boss::Boss(Game& game)
     new BT::Death(behavior);
 }
 
-void Boss::update()
+void Boss::update(float deltaTime)
 {
     m_rootNode.tick();
 }
@@ -64,29 +64,29 @@ void Boss::switchToPhaseTwo()
     }
 }
 
-//void Boss::setState(BossStatePhaseOne newState)
-//{
-//    if (m_currentStateName == newState)
-//        return;
-//
-//    m_currentStateName = newState;
-//    m_stateManager.setState(this, newState);
-//
-//    if (m_texturesP1.find(newState) != m_texturesP1.end())
-//        m_sprites.setTexture(m_texturesP1[newState]);
-//}
-//
-//void Boss::setState2(BossStatePhaseTwo newState)
-//{
-//    if (m_currentStateNameP2 == newState)
-//        return;
-//
-//    m_currentStateNameP2 = newState;
-//    m_stateManager.setState2(this, newState);
-//
-//    if (m_texturesP2.find(newState) != m_texturesP2.end())
-//        m_sprites.setTexture(m_texturesP2[newState]);
-//}
+void Boss::setState(BossStatePhaseOne newState)
+{
+    if (m_currentStateName == newState)
+        return;
+
+    m_currentStateName = newState;
+    m_stateManager.setState(this, newState);
+
+    if (m_texturesP1.find(newState) != m_texturesP1.end())
+        m_sprites.setTexture(m_texturesP1[newState]);
+}
+
+void Boss::setState2(BossStatePhaseTwo newState)
+{
+    if (m_currentStateNameP2 == newState)
+        return;
+
+    m_currentStateNameP2 = newState;
+    m_stateManager.setState2(this, newState);
+
+    if (m_texturesP2.find(newState) != m_texturesP2.end())
+        m_sprites.setTexture(m_texturesP2[newState]);
+}
 
 int Boss::getHp()
 {
@@ -189,6 +189,40 @@ void Boss::draw(sf::RenderWindow& window) const
 int Boss::getHp() const
 {
     return m_health;
+}
+
+int Boss::getAttackDamage(BossStatePhaseOne attackType) const
+{
+    switch (attackType)
+	{
+		case BossStatePhaseOne::Attack1:
+            return attack1Damage;
+		case BossStatePhaseOne::Attack2:
+            return attack2Damage;
+		case BossStatePhaseOne::Attack3:
+            return attack3Damage;
+		case BossStatePhaseOne::JumpAttack:
+            return jumpAttackDamage;
+		default:
+            return 0;
+    }
+}
+
+int Boss::getAttackDamage(BossStatePhaseTwo attackType) const
+{
+    switch (attackType)
+	{
+		case BossStatePhaseTwo::AttackFlame1:
+            return attackFlame1Damage;
+		case BossStatePhaseTwo::AttackFlame2:
+            return attackFlame2Damage;
+		case BossStatePhaseTwo::AttackFlame3:
+            return attackFlame3Damage;
+		case BossStatePhaseTwo::JumpAttackFlame:
+            return jumpAttackFlameDamage;
+		default: 
+            return 0;
+    }
 }
 
 BT::Status Boss::tick()

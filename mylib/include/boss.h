@@ -111,9 +111,16 @@ public:
     using BossStatePhaseOne = BossStateNames::BossStatePhaseOne;
     using BossStatePhaseTwo = BossStateNames::BossStatePhaseTwo;
 
-    Boss(Game& game);
+    // default constructor
+    Boss() : m_game(nullptr), m_currentTarget(nullptr), m_health(100),
+        m_isInvulnerable(false), m_isAttacking(false), m_invulnerableDuration(0.f),
+        m_phaseTwoActive(false), m_currentStateName(BossStatePhaseOne::Idle),
+        m_currentStateNameP2(BossStatePhaseTwo::IdleFlame), m_rootNode(nullptr)
+    {}
 
-    void update();
+    Boss(Game* game);
+
+    void update(float deltaTime);
     void findValidTarget();
     void switchToPhaseTwo();
     void loadTextures();
@@ -133,6 +140,11 @@ public:
 
     void setHp(int health);
     int getHp() const;
+
+    //attack
+    int getAttackDamage(BossStatePhaseOne attackType) const;
+    int getAttackDamage(BossStatePhaseTwo attackType) const;
+
     void draw(sf::RenderWindow& window) const; 
 
     BT::Status tick();
@@ -147,7 +159,7 @@ public:
     bool m_phaseTwoActive;
 
 private:
-    Game& m_game;
+    Game* m_game;
     Hero* m_currentTarget;
     int m_health;
     sf::Clock m_invulnerableClock;
@@ -157,8 +169,18 @@ private:
     float m_invulnerableDuration;
     BT::RootNode m_rootNode;
 
+    //attack ratio
+    int attack1Damage = 10;
+    int attack2Damage = 20;
+    int attack3Damage = 30;
+    int jumpAttackDamage = 40;
+    int attackFlame1Damage = 20;
+    int attackFlame2Damage = 30;
+    int attackFlame3Damage = 40;
+    int jumpAttackFlameDamage = 40;
+
     sf::Sprite m_sprites;
-    //BossState m_stateManager;
+    /*BossState m_stateManager;*/
     BossStatePhaseOne m_currentStateName;
     BossStatePhaseTwo m_currentStateNameP2;
 	std::map<BossStatePhaseOne, sf::Texture> m_texturesP1;

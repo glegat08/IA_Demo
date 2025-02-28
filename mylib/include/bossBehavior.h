@@ -2,6 +2,9 @@
 
 #include "behaviorTree.h"
 #include "boss.h"
+#include "game.h"
+
+class Game;
 
 namespace BT
 {
@@ -48,6 +51,10 @@ namespace BT
         Status tick() override
         {
             getGameObject()->setState(Boss::BossStatePhaseOne::Attack1);
+            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack1);
+
+            m_player.takeDamage(damage);
+
             return Success;
         }
     };

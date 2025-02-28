@@ -1,7 +1,10 @@
 #pragma once
 
 #include "hero.h"
+#include "boss.h"
 #include "sceneBase.h"
+
+class Boss;
 
 class Game : public SceneBase
 {
@@ -11,6 +14,7 @@ public:
 
     // PLAYER
     void setPlayer();
+    void setBoss();
     void removeProjectiles();
     void checkCollision();
 
@@ -37,6 +41,7 @@ public:
 private:
     int m_enemiesCount;
     Hero m_player;
+    Boss* m_boss;
 
     // MAP
     sf::RectangleShape m_rectangle_shape;
