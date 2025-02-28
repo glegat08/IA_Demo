@@ -82,6 +82,7 @@ private:
 	float m_jumpVelocity = 0.f;
 	bool m_isJumping;
 	bool m_isOnGround = false;
+	bool m_isAirDodging = false;
 
 	float m_speed = 70.f;
 	float m_horizontalVelocity = 0.f;

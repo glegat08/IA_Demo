@@ -24,6 +24,7 @@ public:
     void setGroundTexture(sf::RenderWindow* window);
     sf::FloatRect getGroundHitbox();
 	sf::FloatRect getPlatformHitbox();
+    sf::FloatRect GetWindowCollision();
 
     void setAudio();
     void processInput(const sf::Event& event) override;

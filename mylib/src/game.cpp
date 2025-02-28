@@ -16,7 +16,11 @@ Game::Game(sf::RenderWindow* window, const float& framerate)
 
 void Game::setPlayer()
 {
-    m_player.getSprite().setPosition(100, getGroundHitbox().top - m_player.getHitbox().height);
+    m_player.getSprite().setPosition(100, 100);
+
+    m_player.setState(HeroStateNames::stateName::jump);
+
+    m_player.setOnGround(false);
 }
 
 void Game::checkCollision()
@@ -28,6 +32,27 @@ void Game::checkCollision()
     }
     else
         m_player.setOnGround(false);
+
+    sf::FloatRect windowBounds = GetWindowCollision();
+    sf::FloatRect playerHitbox = m_player.getHitbox();
+
+    if (playerHitbox.left < windowBounds.left)
+    {
+        m_player.getSprite().setPosition
+    	(
+            windowBounds.left + (m_player.getPlayerPosition().x - playerHitbox.left),
+            m_player.getPlayerPosition().y
+        );
+    }
+
+    if (playerHitbox.left + playerHitbox.width > windowBounds.left + windowBounds.width)
+    {
+        m_player.getSprite().setPosition
+    	(
+            m_player.getPlayerPosition().x - ((playerHitbox.left + playerHitbox.width) - (windowBounds.left + windowBounds.width)),
+            m_player.getPlayerPosition().y
+        );
+    }
 }
 
 void Game::setBackground(sf::RenderWindow* window)
@@ -59,6 +84,11 @@ void Game::setGroundTexture(sf::RenderWindow* window)
         m_rectangle_shape.setTextureRect(sf::IntRect(0, 0, window->getSize().x + 3000, m_mapTexture.getSize().y + 100));
         m_rectangle_shape.setSize(sf::Vector2f(window->getSize().x, m_mapTexture.getSize().y));
     }
+}
+
+sf::FloatRect Game::GetWindowCollision()
+{
+	return sf::FloatRect(0, 0, m_renderWindow->getSize().x, m_renderWindow->getSize().y);
 }
 
 sf::FloatRect Game::getGroundHitbox()

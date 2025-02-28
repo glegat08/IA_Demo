@@ -12,7 +12,6 @@ Hero::Hero()
 	m_textures[stateName::jump_attack].loadFromFile(PathManager::getResourcePath("hero\\AIR_ATTACK.png"));
 	m_textures[stateName::block].loadFromFile(PathManager::getResourcePath("hero\\BLOCK.png"));
 
-	m_sprites.setTexture(m_textures[stateName::idle]);
     m_sprites.setScale(2.f, 2.f);
 }
 
@@ -148,13 +147,13 @@ sf::FloatRect Hero::getHitbox() const
             offsetX = spriteRect.width * 0.05f;
         break;
     case stateName::dodge:
-        width = spriteRect.width * 0.18f;
-        if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.2f;
-        else
-            offsetX = spriteRect.width * 0.66f;
-        break;
-	case stateName::block:
+            width = spriteRect.width * 0.5f;
+            if (m_isFacingLeft)
+                offsetX = spriteRect.width * 0.45f;
+            else
+                offsetX = spriteRect.width * 0.05f;
+    	break;
+    case stateName::block:
 		width = spriteRect.width * 0.3f;
 		if (m_isFacingLeft)
 			offsetX = spriteRect.width * 0.65f;

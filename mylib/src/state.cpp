@@ -158,8 +158,11 @@ void JumpState::handleInput(Hero& hero)
 {
     updateDirection(hero);
 
-    if (isDodging())
+    if (isDodging()) 
+    {
+        hero.m_isAirDodging = true;
         hero.m_stateManager.pushState(&hero, HeroStateNames::stateName::dodge);
+    }
 
     if (isAttacking())
         hero.setState(HeroStateNames::stateName::jump_attack);
@@ -359,6 +362,7 @@ void DodgeState::handleInput(Hero& hero)
 {
     if (m_elapsedTime.getElapsedTime().asSeconds() >= m_dodgeDuration)
     {
+        hero.m_isAirDodging = false;
         if (!hero.m_stateManager.isStateStackEmpty())
             hero.m_stateManager.popState(&hero);
         else
