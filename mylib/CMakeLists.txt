@@ -17,7 +17,6 @@ set(SOURCES
     ${SOURCE_DIR}/state.cpp
     ${SOURCE_DIR}/heroState.cpp
     ${SOURCE_DIR}/bossBehavior.cpp
-    ${SOURCE_DIR}/strategy.cpp
     ${SOURCE_DIR}/behaviorTree.cpp
     ${SOURCE_DIR}/resourceManager.cpp
 )
@@ -36,7 +35,6 @@ set(HEADERS
     ${HEADER_DIR}/state.h
     ${HEADER_DIR}/heroState.h
     ${HEADER_DIR}/bossBehavior.h
-    ${HEADER_DIR}/strategy.h
     ${HEADER_DIR}/behaviorTree.h
     ${HEADER_DIR}/resourceManager.h
 )
