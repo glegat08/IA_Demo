@@ -12,6 +12,7 @@ public:
     // PLAYER
     void setPlayer();
     void removeProjectiles();
+    void checkCollision();
 
     // ENEMIES
     void setEnemiesCount(int count);
@@ -20,13 +21,18 @@ public:
 
     // GAME MAP
     void setBackground(sf::RenderWindow* window);
-    void setMapTexture(sf::RenderWindow* window);
+    void setGroundTexture(sf::RenderWindow* window);
+    sf::FloatRect getGroundHitbox();
+    sf::FloatRect getPlatformHitbox();
+
     void setAudio();
     void processInput(const sf::Event& event) override;
     void update(const float& deltaTime) override;
     void render() override;
     void displayFPS();
     void displayScore();
+
+    void drawHitboxes();
 
 private:
     int m_enemiesCount;
@@ -39,7 +45,6 @@ private:
     // PLATFORM
     sf::RectangleShape m_platform;
     sf::Texture m_platformTexture;
-    sf::Sprite m_platformSprite;
 
     // BACKGROUND
     sf::Texture m_backgroundTexture;
