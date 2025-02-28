@@ -135,11 +135,10 @@ namespace BT
 
     using IDecoratorNode = ISingleChildNode;
 
-
     class RootNode : public ISingleChildNode
     {
     public:
-        RootNode(IGameObject* npc) : ISingleChildNode(nullptr), m_gameObject(npc)
+        RootNode(IGameObject* boss) : ISingleChildNode(nullptr), m_gameObject(boss)
         {
         }
 
@@ -157,8 +156,6 @@ namespace BT
     private:
         IGameObject* m_gameObject;
     };
-
-
 
     class IConditionalNode : public IDecoratorNode
     {

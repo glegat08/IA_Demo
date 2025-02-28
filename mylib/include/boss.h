@@ -138,11 +138,12 @@ public:
     sf::Texture& getTexture(const BossStatePhaseOne& stateName_);
     sf::Texture& getTexture2(const BossStatePhaseTwo& stateName_);
 
+    bool m_phaseTwoActive;
+
 private:
     Game& m_game;
     Hero* m_currentTarget;
     int m_health;
-    bool m_phaseTwoActive;
     bool m_invulnerable;
     float m_invulnerableDuration;
     BT::RootNode<Boss> m_rootNode;
