@@ -3,6 +3,7 @@
 #include "bossBehavior.h"
 #include "resourceManager.h"
 #include "game.h"
+#include "hero.h"
 
 Boss::Boss(Game* game)
     : m_game(game)
@@ -14,8 +15,10 @@ Boss::Boss(Game* game)
     , m_invulnerableDuration(0.0f)
 	, m_rootNode(this)
 {
+    std::cout << "Boss created!" << std::endl;
+
     loadTextures();
-    m_sprites.setPosition(500, 500);
+    /*m_sprites.setPosition(500, 500);*/
 
     auto* behavior = new BT::Sequence(&m_rootNode);
     if (!behavior)
@@ -49,11 +52,39 @@ Boss::Boss(Game* game)
 void Boss::update(float deltaTime)
 {
     m_rootNode.tick();
+
+    updateAnimation();
+    updateInvulnerabilityEffect();
+    findValidTarget();
+    m_isAttacking = false;
+
+    if (m_currentTarget)
+    {
+        Hero* hero = m_currentTarget;
+        if (isAttacking() && hero->getHitbox().intersects(m_sprites.getGlobalBounds()))
+        {
+            int damage = getAttackDamage(m_currentStateName);
+            hero->takeDamage(damage);
+        }
+    }
 }
 
 void Boss::findValidTarget()
 {
+    if (m_game)
+    {
+        Hero& hero = m_game->getPlayer();
+        if (hero.isAlive())
+            m_currentTarget = &hero;
+        else
+            m_currentTarget = nullptr;
+    }
+    else
+    {
+        m_currentTarget = nullptr;
+    }
 }
+
 
 void Boss::switchToPhaseTwo()
 {
@@ -95,7 +126,7 @@ void Boss::setStatePhaseTwo(BossStatePhaseTwo newState)
 
 void Boss::updateAnimation()
 {
-    if (m_animationClock.getElapsedTime().asSeconds() >= m_frameDuration)
+    if (m_frameCount > 0 && m_animationClock.getElapsedTime().asSeconds() >= m_frameDuration)
     {
         m_currentFrame = (m_currentFrame + 1) % m_frameCount;
         m_animationClock.restart();
@@ -115,10 +146,12 @@ void Boss::setHp(int health)
 {
     m_health = health;
     if (m_health <= 0)
-    {
-        m_rootNode.tick();
-        // death
-    }
+        setStatePhaseTwo(BossStatePhaseTwo::Death);
+}
+
+Hero* Boss::getCurrentTarget() const
+{
+	return m_currentTarget;
 }
 
 sf::Texture& Boss::getTexture(const BossStatePhaseOne& stateName_)
@@ -148,19 +181,16 @@ sf::Sprite& Boss::getSprite()
 
 void Boss::takeDamage(int damage)
 {
-    if (m_isInvulnerable) return;
+    if (m_isInvulnerable)
+        return;
 
     m_health -= damage;
     if (m_health <= 0)
-    {
         setStatePhaseTwo(BossStatePhaseTwo::Death);
-    }
     else
-    {
         setStatePhaseOne(BossStatePhaseOne::Hurt);
-    }
 
-    // 2sec invu
+    // 2 sec invu
     setInvulnerable(2.0f);
 }
 
@@ -193,10 +223,13 @@ void Boss::setInvulnerable(float duration)
 
 void Boss::updateInvulnerabilityEffect()
 {
+    if (m_isInvulnerable && m_invulnerableClock.getElapsedTime().asSeconds() >= m_invulnerableDuration)
+        m_isInvulnerable = false;
 }
 
 void Boss::attacking()
 {
+    m_isAttacking = true;
 }
 
 void Boss::draw(sf::RenderWindow& window) const
@@ -248,28 +281,86 @@ BT::Status Boss::tick()
     return m_rootNode.tick();
 }
 
+//void Boss::loadTextures()
+//{
+//    // First phase
+//    std::cout << "Loading textures..." << std::endl;
+//    m_texturesP1[BossStatePhaseOne::Idle].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\IDLE.png"));
+//    std::cout << PathManager::getResourcePath("firstBoss_Sprites\\IDLE.png") << std::endl;
+//
+//    m_texturesP1[BossStatePhaseOne::Run].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\RUN.png"));
+//    m_texturesP1[BossStatePhaseOne::JumpAttack].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\JUMP ATTACK.png"));
+//    m_texturesP1[BossStatePhaseOne::Hurt].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\HURT.png"));
+//    m_texturesP1[BossStatePhaseOne::Attack1].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\ATTACK 1.png"));
+//    m_texturesP1[BossStatePhaseOne::Attack2].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\ATTACK 2.png"));
+//    m_texturesP1[BossStatePhaseOne::Attack3].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\ATTACK 3.png"));
+//    m_texturesP1[BossStatePhaseOne::Transformation].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\SHOUT.png"));
+//
+//    for (const auto& pair : m_texturesP1) {
+//        std::cout << "Texture loaded for state: " << static_cast<int>(pair.first) << std::endl;
+//    }
+//
+//
+//    // Second phase
+//    m_texturesP2[BossStatePhaseTwo::IdleFlame].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\IDLE (FLAMING SWORD).png"));
+//    m_texturesP2[BossStatePhaseTwo::RunFlame].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\RUN (FLAMING SWORD).png"));
+//    m_texturesP2[BossStatePhaseTwo::JumpAttackFlame].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\JUMP ATTACK (FLAMING SWORD).png"));
+//    m_texturesP2[BossStatePhaseTwo::HurtFlame].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\HURT (FLAMING SWORD).png"));
+//    m_texturesP2[BossStatePhaseTwo::AttackFlame1].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\ATTACK 1 (FLAMING SWORD).png"));
+//    m_texturesP2[BossStatePhaseTwo::AttackFlame2].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\ATTACK 2 (FLAMING SWORD).png"));
+//    m_texturesP2[BossStatePhaseTwo::AttackFlame3].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\ATTACK 3 (FLAMING SWORD).png"));
+//    m_texturesP2[BossStatePhaseTwo::Death].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\DEATH.png"));
+//
+//    m_sprites.setTexture(m_texturesP1[BossStatePhaseOne::Idle]);
+//    m_sprites.setScale(2.f, 2.f);
+//}
+
 void Boss::loadTextures()
 {
     // First phase
-    m_texturesP1[BossStatePhaseOne::Idle].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\IDLE.png"));
-    m_texturesP1[BossStatePhaseOne::Run].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\RUN.png"));
-    m_texturesP1[BossStatePhaseOne::JumpAttack].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\JUMP ATTACK.png"));
-    m_texturesP1[BossStatePhaseOne::Hurt].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\HURT.png"));
-    m_texturesP1[BossStatePhaseOne::Attack1].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\ATTACK 1.png"));
-    m_texturesP1[BossStatePhaseOne::Attack2].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\ATTACK 2.png"));
-    m_texturesP1[BossStatePhaseOne::Attack3].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\ATTACK 3.png"));
-    m_texturesP1[BossStatePhaseOne::Transformation].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\SHOUT.png"));
+    std::vector<std::pair<BossStatePhaseOne, std::string>> texturesP1 = 
+    {
+        {BossStatePhaseOne::Idle, "IDLE.png"},
+        {BossStatePhaseOne::Run, "RUN.png"},
+        {BossStatePhaseOne::JumpAttack, "JUMP ATTACK.png"},
+        {BossStatePhaseOne::Hurt, "HURT.png"},
+        {BossStatePhaseOne::Attack1, "ATTACK 1.png"},
+        {BossStatePhaseOne::Attack2, "ATTACK 2.png"},
+        {BossStatePhaseOne::Attack3, "ATTACK 3.png"},
+        {BossStatePhaseOne::Transformation, "SHOUT.png"}
+    };
+
+    for (const auto& [state, file] : texturesP1) {
+        std::string path = PathManager::getResourcePath("firstBoss_Sprites\\" + file);
+        if (!m_texturesP1[state].loadFromFile(path))
+            std::cerr << "Error : impossible to find texture " << path << std::endl;
+    }
 
     // Second phase
-    m_texturesP2[BossStatePhaseTwo::IdleFlame].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\IDLE (FLAMING SWORD).png"));
-    m_texturesP2[BossStatePhaseTwo::RunFlame].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\RUN (FLAMING SWORD).png"));
-    m_texturesP2[BossStatePhaseTwo::JumpAttackFlame].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\JUMP ATTACK (FLAMING SWORD).png"));
-    m_texturesP2[BossStatePhaseTwo::HurtFlame].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\HURT (FLAMING SWORD).png"));
-    m_texturesP2[BossStatePhaseTwo::AttackFlame1].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\ATTACK 1 (FLAMING SWORD).png"));
-    m_texturesP2[BossStatePhaseTwo::AttackFlame2].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\ATTACK 2 (FLAMING SWORD).png"));
-    m_texturesP2[BossStatePhaseTwo::AttackFlame3].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\ATTACK 3 (FLAMING SWORD).png"));
-    m_texturesP2[BossStatePhaseTwo::Death].loadFromFile(PathManager::getResourcePath("firstBoss_Sprites\\SHOUT (FLAMING SWORD).png"));
+    std::vector<std::pair<BossStatePhaseTwo, std::string>> texturesP2 = {
+        {BossStatePhaseTwo::IdleFlame, "IDLE (FLAMING SWORD).png"},
+        {BossStatePhaseTwo::RunFlame, "RUN (FLAMING SWORD).png"},
+        {BossStatePhaseTwo::JumpAttackFlame, "JUMP ATTACK (FLAMING SWORD).png"},
+        {BossStatePhaseTwo::HurtFlame, "HURT (FLAMING SWORD).png"},
+        {BossStatePhaseTwo::AttackFlame1, "ATTACK 1 (FLAMING SWORD).png"},
+        {BossStatePhaseTwo::AttackFlame2, "ATTACK 2 (FLAMING SWORD).png"},
+        {BossStatePhaseTwo::AttackFlame3, "ATTACK 3 (FLAMING SWORD).png"},
+        {BossStatePhaseTwo::Death, "DEATH.png"}
+    };
 
-    m_sprites.setTexture(m_texturesP1[BossStatePhaseOne::Idle]);
-    m_sprites.setScale(2.f, 2.f);
+    for (const auto& [state, file] : texturesP2) {
+        std::string path = PathManager::getResourcePath("firstBoss_Sprites\\" + file);
+        if (!m_texturesP2[state].loadFromFile(path)) {
+            std::cerr << "Error: can't load texture " << path << std::endl;
+        }
+    }
+
+    if (m_texturesP1.find(BossStatePhaseOne::Idle) != m_texturesP1.end()) {
+        m_sprites.setTexture(m_texturesP1[BossStatePhaseOne::Idle]);
+        m_sprites.setScale(2.f, 2.f);
+    }
+    else 
+    {
+        std::cerr << "Error : no default texture !" << std::endl;
+    }
 }

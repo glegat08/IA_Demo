@@ -43,7 +43,8 @@ public:
 private:
     int m_enemiesCount;
     Hero m_player;
-    Boss* m_boss;
+    std::unique_ptr<Boss> m_boss;
+
 
     // MAP
     sf::RectangleShape m_rectangle_shape;

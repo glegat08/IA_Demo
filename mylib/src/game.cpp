@@ -3,16 +3,20 @@
 #include "resourceManager.h"
 
 Game::Game(sf::RenderWindow* window, const float& framerate)
-    : SceneBase(window, framerate)
+    : SceneBase(window, framerate),
+    m_boss(std::make_unique<Boss>(this))
 {
     setBackground(window);
     setGroundTexture(window);
     setPlayer();
     setBoss();
+    sf::Vector2f pos = m_boss->getSprite().getPosition();
+    std::cout << "Boss position: x=" << pos.x << ", y=" << pos.y << std::endl;
 }
 
 //Game::~Game()
 //{
+
 //}
 
 void Game::setPlayer()
@@ -27,12 +31,21 @@ Hero& Game::getPlayer()
 
 void Game::setBoss()
 {
-    m_boss->getSprite().setPosition(500, getGroundHitbox().top - m_player.getHitbox().height);
+    if (m_boss)
+        m_boss->getSprite().setPosition(200, getGroundHitbox().top - m_player.getHitbox().height);
+    else
+        std::cerr << "Error: Boss is not initialized!" << std::endl;
 }
 
 Boss* Game::getBoss() const
 {
-    return m_boss;
+    if (m_boss) {
+        return m_boss.get();
+    }
+    else {
+        std::cerr << "Error: Boss is null!" << std::endl;
+        return nullptr;
+    }
 }
 
 void Game::checkCollision()
@@ -94,8 +107,11 @@ void Game::processInput(const sf::Event& event)
 
 void Game::update(const float& deltaTime)
 {
-    m_player.update(deltaTime);
-    m_boss->update(deltaTime);
+    m_player.update(deltaTime);   
+    if (m_boss)
+        m_boss->update(deltaTime);
+    else
+        std::cerr << "Error: Boss instance is null!" << std::endl;
 
     float currentTime = m_fpsClock.getElapsedTime().asMilliseconds();
     if (currentTime - m_fpsStartTime > 1000)
@@ -120,7 +136,15 @@ void Game::render()
     m_renderWindow->draw(m_backgroundShape);
     m_renderWindow->draw(m_rectangle_shape);
     m_renderWindow->draw(m_player.getSprite());
-    m_renderWindow->draw(m_boss->getSprite());
+    /*m_renderWindow->draw(m_boss->getSprite());*/
+    if (m_boss) {
+        /*std::cout << "Drawing boss..." << std::endl;*/
+        m_renderWindow->draw(m_boss->getSprite());
+    }
+    else {
+        std::cerr << "Error: Boss is null during rendering!" << std::endl;
+    }
+
 
     drawHitboxes();
 }

@@ -146,6 +146,7 @@ public:
 
     void setHp(int health);
     int getHp() const;
+    Hero* getCurrentTarget() const;
 
     //attack
     int getAttackDamage(BossStatePhaseOne attackType) const;
