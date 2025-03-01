@@ -22,10 +22,10 @@ Boss::Boss(Game* game)
         throw std::runtime_error("memory allocation error");
 
     // Phase 1 actions
-    new BT::BossAttack1(behavior);
-    new BT::BossAttack2(behavior);
-    new BT::BossAttack3(behavior);
-    new BT::JumpAttack(behavior);
+    new BT::BossAttack1(behavior, m_game);
+    new BT::BossAttack2(behavior, m_game);
+    new BT::BossAttack3(behavior, m_game);
+    new BT::JumpAttack(behavior, m_game);
     new BT::RunTowardsPlayer(behavior);
     new BT::Idle(behavior);
 
@@ -34,10 +34,10 @@ Boss::Boss(Game* game)
 
     // Phase 2 actions
     auto* ifPhaseTwo = new BT::IfPhaseTwo(behavior);
-    new BT::BossAttackFlame1(ifPhaseTwo);
-    new BT::BossAttackFlame2(ifPhaseTwo);
-    new BT::BossAttackFlame3(ifPhaseTwo);
-    new BT::FlameJumpAttack(ifPhaseTwo);
+    new BT::BossAttackFlame1(ifPhaseTwo, m_game);
+    new BT::BossAttackFlame2(ifPhaseTwo, m_game);
+    new BT::BossAttackFlame3(ifPhaseTwo, m_game);
+    new BT::FlameJumpAttack(ifPhaseTwo, m_game);
     new BT::RunFlameTowardsPlayer(ifPhaseTwo);
     new BT::IdleFlame(ifPhaseTwo);
 
@@ -60,32 +60,50 @@ void Boss::switchToPhaseTwo()
     if (!m_phaseTwoActive)
     {
         m_phaseTwoActive = true;
-        setState2(BossStatePhaseTwo::IdleFlame);
+        setStatePhaseTwo(BossStatePhaseTwo::IdleFlame);
     }
 }
 
-void Boss::setState(BossStatePhaseOne newState)
+void Boss::setStatePhaseOne(BossStatePhaseOne newState)
 {
     if (m_currentStateName == newState)
         return;
 
     m_currentStateName = newState;
-    m_stateManager.setState(this, newState);
+    m_sprites.setTexture(getTexture(newState));
 
-    if (m_texturesP1.find(newState) != m_texturesP1.end())
-        m_sprites.setTexture(m_texturesP1[newState]);
+    m_currentFrame = 0;
+    m_frameCount = phaseOneAnimations[newState].frameCount;
+    m_frameDuration = phaseOneAnimations[newState].frameDuration;
+    m_animationClock.restart();
 }
 
-void Boss::setState2(BossStatePhaseTwo newState)
+
+void Boss::setStatePhaseTwo(BossStatePhaseTwo newState)
 {
     if (m_currentStateNameP2 == newState)
         return;
 
     m_currentStateNameP2 = newState;
-    m_stateManager.setState2(this, newState);
+    m_sprites.setTexture(getTexture2(newState));
 
-    if (m_texturesP2.find(newState) != m_texturesP2.end())
-        m_sprites.setTexture(m_texturesP2[newState]);
+    m_currentFrame = 0;
+    m_frameCount = phaseTwoAnimations[newState].frameCount;
+    m_frameDuration = phaseTwoAnimations[newState].frameDuration;
+    m_animationClock.restart();
+}
+
+void Boss::updateAnimation()
+{
+    if (m_animationClock.getElapsedTime().asSeconds() >= m_frameDuration)
+    {
+        m_currentFrame = (m_currentFrame + 1) % m_frameCount;
+        m_animationClock.restart();
+
+        int frameWidth = 128;
+        int frameHeight = 108;
+        m_sprites.setTextureRect(sf::IntRect(m_currentFrame * frameWidth, 0, frameWidth, frameHeight));
+    }
 }
 
 int Boss::getHp()
@@ -135,11 +153,11 @@ void Boss::takeDamage(int damage)
     m_health -= damage;
     if (m_health <= 0)
     {
-        setState2(BossStatePhaseTwo::Death);
+        setStatePhaseTwo(BossStatePhaseTwo::Death);
     }
     else
     {
-        setState(BossStatePhaseOne::Hurt);
+        setStatePhaseOne(BossStatePhaseOne::Hurt);
     }
 
     // 2sec invu

@@ -20,9 +20,19 @@ void Game::setPlayer()
     m_player.getSprite().setPosition(100, getGroundHitbox().top - m_player.getHitbox().height);
 }
 
+Hero& Game::getPlayer()
+{
+    return m_player;
+}
+
 void Game::setBoss()
 {
     m_boss->getSprite().setPosition(500, getGroundHitbox().top - m_player.getHitbox().height);
+}
+
+Boss* Game::getBoss() const
+{
+    return m_boss;
 }
 
 void Game::checkCollision()

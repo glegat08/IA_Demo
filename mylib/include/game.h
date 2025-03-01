@@ -14,7 +14,9 @@ public:
 
     // PLAYER
     void setPlayer();
+    Hero& getPlayer();
     void setBoss();
+    Boss* getBoss() const;
     void removeProjectiles();
     void checkCollision();
 

@@ -6,6 +6,11 @@
 #include "gameObject.h"
 #include "game.h"
 
+struct AnimationData
+{
+    int frameCount;
+    float frameDuration;
+};
 
 namespace BossStateNames
 {
@@ -127,8 +132,9 @@ public:
     void updateInvulnerabilityEffect();
     void attacking();
 
-    void setState(BossStatePhaseOne newState);
-    void setState2(BossStatePhaseTwo newState);
+    void setStatePhaseOne(BossStatePhaseOne newState);
+    void setStatePhaseTwo(BossStatePhaseTwo newState);
+    void updateAnimation();
 
     bool isAlive() override;
     bool isShooting() override;
@@ -168,6 +174,10 @@ private:
     bool m_isAttacking;
     float m_invulnerableDuration;
     BT::RootNode m_rootNode;
+    int m_currentFrame = 0;
+    int m_frameCount = 0;
+    float m_frameDuration = 0.0f;
+    sf::Clock m_animationClock;
 
     //attack ratio
     int attack1Damage = 10;
@@ -183,7 +193,30 @@ private:
     /*BossState m_stateManager;*/
     BossStatePhaseOne m_currentStateName;
     BossStatePhaseTwo m_currentStateNameP2;
-	std::map<BossStatePhaseOne, sf::Texture> m_texturesP1;
+
+    std::map<BossStatePhaseOne, AnimationData> phaseOneAnimations = {
+    {BossStatePhaseOne::Idle, {6, 0.2f}},
+    {BossStatePhaseOne::Run, {8, 0.1f}},
+    {BossStatePhaseOne::Hurt, {4, 0.3f}},
+    {BossStatePhaseOne::Attack1, {7, 0.12f}},
+    {BossStatePhaseOne::Attack2, {6, 0.15f}},
+    {BossStatePhaseOne::Attack3, {7, 0.1f}},
+    {BossStatePhaseOne::JumpAttack, {12, 0.08f}},
+    {BossStatePhaseOne::Transformation, {17, 0.12f}}
+    };
+
+    std::map<BossStatePhaseTwo, AnimationData> phaseTwoAnimations = {
+    {BossStatePhaseTwo::IdleFlame, {6, 0.18f}},
+    {BossStatePhaseTwo::RunFlame, {8, 0.1f}},
+    {BossStatePhaseTwo::HurtFlame, {4, 0.3f}},
+    {BossStatePhaseTwo::AttackFlame1, {7, 0.1f}},
+    {BossStatePhaseTwo::AttackFlame2, {6, 0.12f}},
+    {BossStatePhaseTwo::AttackFlame3, {7, 0.1f}},
+    {BossStatePhaseTwo::JumpAttackFlame, {12, 0.07f}},
+    {BossStatePhaseTwo::Death, {10, 0.2f}},
+    };
+
+    std::map<BossStatePhaseOne, sf::Texture> m_texturesP1;
 	std::map<BossStatePhaseTwo, sf::Texture> m_texturesP2;
 };
 
