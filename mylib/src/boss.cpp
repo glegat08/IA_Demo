@@ -28,7 +28,7 @@ void Boss::initializeBehaviorTree()
 
     new BT::Idle(behavior);
     new BT::Wait(behavior, 4.0f);
-    new BT::RunTowardsPlayer(behavior);
+    new BT::RunTowardsTarget(behavior, true);
     new BT::Wait(behavior, 2.0f);
 
     new BT::BossAttack1(behavior, m_game);
@@ -40,7 +40,7 @@ void Boss::initializeBehaviorTree()
     new BT::BossJumpAttack(behavior, m_game);
     new BT::Wait(behavior, 2.0f);
 
-    new BT::RunTowardsPlayer(behavior);
+    new BT::RunTowardsTarget(behavior, true);
     new BT::Wait(behavior, 2.0f);
 
     auto* ifHealthLow = new BT::IfHealthLow(behavior);

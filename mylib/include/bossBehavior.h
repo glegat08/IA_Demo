@@ -48,16 +48,26 @@ namespace BT
     public:
         BossAttack1(ICompositeNode* parent, Game* game)
             : BehaviorNodeDecorator(parent), m_game(game) {}
+
         Status tick() override
         {
             getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack1);
             getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::Attack1));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack1);
+
             if (m_game)
-                m_game->getPlayer().takeDamage(damage);
+            {
+                Hero& player = m_game->getPlayer();
+                if (getGameObject()->getHitbox().intersects(player.getHitbox()))
+                {
+                    player.takeDamage(damage);
+                }
+            }
+
             return Success;
         }
     };
+
 
     class BossAttackFlame1 : public BehaviorNodeDecorator<class Boss, IActionNode>
     {
@@ -214,56 +224,30 @@ namespace BT
         }
     };
 
-    class RunToTarget : public BehaviorNodeDecorator<class Boss, IActionNode>
+    class RunTowardsTarget : public BehaviorNodeDecorator<class Boss, IActionNode>
     {
+    private:
+        bool m_isPlayer;
     public:
-        RunToTarget(ICompositeNode* parent) : BehaviorNodeDecorator(parent) {}
+        RunTowardsTarget(ICompositeNode* parent, bool isPlayer)
+            : BehaviorNodeDecorator(parent), m_isPlayer(isPlayer) {}
 
         Status tick() override
         {
             auto boss = dynamic_cast<class Boss*>(getGameObject());
-            if (!boss || !boss->getCurrentTarget())
+            if (!boss || (m_isPlayer && !boss->getCurrentTarget()))
                 return Failed;
 
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::BossJumpAttack));
-
+            auto target = m_isPlayer ? boss->getCurrentTarget()->getPlayerPosition() : boss->getCurrentTarget()->getPlayerPosition();
             sf::Vector2f bossPos = boss->getSprite().getPosition();
-            sf::Vector2f targetPos = boss->getCurrentTarget()->getPlayerPosition();
-
-            float directionX = targetPos.x - bossPos.x;
+            float directionX = target.x - bossPos.x;
 
             if (directionX > 0)
-            {
                 boss->getSprite().move(1.0f, 0.0f);
-            }
             else if (directionX < 0)
-            {
                 boss->getSprite().move(-1.0f, 0.0f);
-            }
 
             return Success;
-        }
-
-        void display() override
-        {
-            std::cout << "RunToTarget" << std::endl;
-        }
-    };
-
-    class RunTowardsPlayer : public BehaviorNodeDecorator<class Boss, IActionNode>
-    {
-    public:
-        RunTowardsPlayer(ICompositeNode* parent) : BehaviorNodeDecorator(parent) {}
-
-        Status tick() override
-        {
-            RunToTarget runToTarget(getParent());
-            return runToTarget.tick();
-        }
-
-        void display() override
-        {
-            std::cout << "RunTowardsPlayer" << std::endl;
         }
     };
 
