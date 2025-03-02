@@ -23,7 +23,7 @@ void Game::setPlayer()
 
 void Game::setBoss()
 {
-    m_boss->getSprite().setPosition(600, getGroundHitbox().top - m_boss->getHitbox().height);
+    m_boss->getSprite().setPosition(600, getGroundHitbox().top);
 }
 
 Hero& Game::getPlayer()
@@ -46,8 +46,12 @@ void Game::checkCollision()
     else
         m_player.setOnGround(false);
 
+	if (m_boss->getHitbox().top + m_boss->getHitbox().height > getGroundHitbox().top)
+		m_boss->getSprite().setPosition(m_boss->getSprite().getPosition().x, getGroundHitbox().top - m_boss->getHitbox().height);
+
     sf::FloatRect windowBounds = GetWindowCollision();
     sf::FloatRect playerHitbox = m_player.getHitbox();
+    sf::FloatRect bossHitbox = m_boss->getHitbox();
 
     if (playerHitbox.left < windowBounds.left)
     {
@@ -66,6 +70,24 @@ void Game::checkCollision()
             m_player.getPlayerPosition().y
         );
     }
+
+	if (bossHitbox.left < windowBounds.left)
+	{
+		m_boss->getSprite().setPosition
+		(
+			windowBounds.left + (m_boss->getSprite().getPosition().x - bossHitbox.left),
+			m_boss->getSprite().getPosition().y
+		);
+	}
+
+	if (bossHitbox.left + bossHitbox.width > windowBounds.left + windowBounds.width)
+	{
+		m_boss->getSprite().setPosition
+		(
+			m_boss->getSprite().getPosition().x - ((bossHitbox.left + bossHitbox.width) - (windowBounds.left + windowBounds.width)),
+			m_boss->getSprite().getPosition().y
+		);
+	}
 }
 
 void Game::setBackground(sf::RenderWindow* window)
@@ -170,6 +192,15 @@ void Game::drawHitboxes()
     playerHitboxShape.setOutlineColor(sf::Color::Green);
     playerHitboxShape.setOutlineThickness(2.f);
 
+	sf::FloatRect bossRect = m_boss->getHitbox();
+	sf::RectangleShape bossHitboxShape;
+	bossHitboxShape.setPosition(bossRect.left, bossRect.top);
+	bossHitboxShape.setSize(sf::Vector2f(bossRect.width, bossRect.height));
+	bossHitboxShape.setFillColor(sf::Color::Transparent);
+	bossHitboxShape.setOutlineColor(sf::Color::Blue);
+	bossHitboxShape.setOutlineThickness(2.f);
+
     m_renderWindow->draw(groundHitboxShape);
     m_renderWindow->draw(playerHitboxShape);
+	m_renderWindow->draw(bossHitboxShape);
 }

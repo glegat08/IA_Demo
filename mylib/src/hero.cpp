@@ -10,7 +10,7 @@ Hero::Hero()
 
 bool Hero::isAlive()
 {
-    return true;
+    return m_health > 0;
 }
 
 bool Hero::isShooting()

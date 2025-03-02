@@ -57,8 +57,6 @@ public:
     void initializeBehaviorTree();
 
     void update(float deltaTime);
-    void updateTimedActions();
-    void updateMovementAndAttack(float deltaTime);
     void findValidTarget();
     void switchToPhaseTwo();
     void loadTextures();
@@ -73,19 +71,17 @@ public:
     bool isShooting() override;
     bool isAttacking() override;
     bool isInvulnerable() override;
-    bool isCloseToTarget() const;
     int getHp() override;
     void takeDamage(int damage) override;
     void setInvulnerable(float duration) override;
 
-    void performTimedAction(const std::string& action, float interval, std::function<void()> callback);
-
     void setHp(int health);
     int getHp() const;
     sf::FloatRect getHitbox() const;
+    bool checkCollisionWithHero() const;
     Hero* getCurrentTarget() const;
-    void moveTowardsPlayer(float deltaTime);
     void retreatFromPlayer(float deltaTime);
+    bool isCloseToTarget() const;
 
     //attack
     int getAttackDamage(BossStatePhaseOne attackType) const;
@@ -102,11 +98,14 @@ public:
     sf::Texture& getTexture2(const BossStatePhaseTwo& stateName_);
 
     bool m_phaseTwoActive;
+    bool isFacingLeft(bool newBool);
+    bool isFacingLeft();
 
 private:
     Game* m_game;
     Hero* m_currentTarget;
     int m_health;
+    int m_midLife = (m_health / 2);
     sf::Clock m_invulnerableClock;
     sf::Clock m_blinkClock;
     bool m_isInvulnerable;
@@ -120,6 +119,7 @@ private:
     sf::Clock m_animationClock;
     sf::Clock m_runAnimationClock;
     sf::Clock m_attackDelayClock;
+    bool m_isFacingLeft = false;
 
     //attack ratio
     int attack1Damage = 10;

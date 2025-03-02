@@ -20,11 +20,16 @@ namespace BT
 
     class IfHealthLow : public BehaviorNodeDecorator<class Boss, IConditionalNode>
     {
+    private:
+        int m_threshold;
+
     public:
-        IfHealthLow(ICompositeNode* node) : BehaviorNodeDecorator(node) {}
+        IfHealthLow(ICompositeNode* node, int threshold)
+            : BehaviorNodeDecorator(node), m_threshold(threshold) {}
+
         bool condition() override
         {
-            return getGameObject()->getHp() < 100;
+            return getGameObject()->getHp() < m_threshold;
         }
     };
 
@@ -45,9 +50,11 @@ namespace BT
     {
     private:
         Game* m_game;
+        float m_attackRange;
+
     public:
-        BossAttack1(ICompositeNode* parent, Game* game)
-            : BehaviorNodeDecorator(parent), m_game(game) {}
+        BossAttack1(ICompositeNode* parent, Game* game, float attackRange)
+            : BehaviorNodeDecorator(parent), m_game(game), m_attackRange(attackRange) {}
 
         Status tick() override
         {
@@ -58,31 +65,45 @@ namespace BT
             if (m_game)
             {
                 Hero& player = m_game->getPlayer();
-                if (getGameObject()->getHitbox().intersects(player.getHitbox()))
-                {
+                sf::Vector2f bossPos = getGameObject()->getSprite().getPosition();
+                sf::Vector2f playerPos = player.getPlayerPosition();
+                float distance = std::sqrt(std::pow(bossPos.x - playerPos.x, 2) + std::pow(bossPos.y - playerPos.y, 2));
+
+                if (distance <= m_attackRange && getGameObject()->getHitbox().intersects(player.getHitbox()))
                     player.takeDamage(damage);
-                }
             }
 
             return Success;
         }
     };
 
-
     class BossAttackFlame1 : public BehaviorNodeDecorator<class Boss, IActionNode>
     {
     private:
         Game* m_game;
+        float m_attackRange;
+
     public:
-        BossAttackFlame1(ICompositeNode* parent, Game* game)
-            : BehaviorNodeDecorator(parent), m_game(game) {}
+        BossAttackFlame1(ICompositeNode* parent, Game* game, float attackRange)
+            : BehaviorNodeDecorator(parent), m_game(game), m_attackRange(attackRange) {}
+
         Status tick() override
         {
             getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::AttackFlame1);
             getGameObject()->getSprite().setTexture(getGameObject()->getTexture2(Boss::BossStatePhaseTwo::AttackFlame1));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame1);
+
             if (m_game)
-                m_game->getPlayer().takeDamage(damage);
+            {
+                Hero& player = m_game->getPlayer();
+                sf::Vector2f bossPos = getGameObject()->getSprite().getPosition();
+                sf::Vector2f playerPos = player.getPlayerPosition();
+                float distance = std::sqrt(std::pow(bossPos.x - playerPos.x, 2) + std::pow(bossPos.y - playerPos.y, 2));
+
+                if (distance <= m_attackRange && getGameObject()->getHitbox().intersects(player.getHitbox()))
+                    player.takeDamage(damage);
+            }
+
             return Success;
         }
     };
@@ -91,16 +112,29 @@ namespace BT
     {
     private:
         Game* m_game;
+        float m_attackRange;
+
     public:
-        BossAttack2(ICompositeNode* parent, Game* game)
-            : BehaviorNodeDecorator(parent), m_game(game) {}
+        BossAttack2(ICompositeNode* parent, Game* game, float attackRange)
+            : BehaviorNodeDecorator(parent), m_game(game), m_attackRange(attackRange) {}
+
         Status tick() override
         {
             getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack2);
             getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::Attack2));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack2);
+
             if (m_game)
-                m_game->getPlayer().takeDamage(damage);
+            {
+                Hero& player = m_game->getPlayer();
+                sf::Vector2f bossPos = getGameObject()->getSprite().getPosition();
+                sf::Vector2f playerPos = player.getPlayerPosition();
+                float distance = std::sqrt(std::pow(bossPos.x - playerPos.x, 2) + std::pow(bossPos.y - playerPos.y, 2));
+
+                if (distance <= m_attackRange && getGameObject()->getHitbox().intersects(player.getHitbox()))
+                    player.takeDamage(damage);
+            }
+
             return Success;
         }
     };
@@ -109,16 +143,29 @@ namespace BT
     {
     private:
         Game* m_game;
+        float m_attackRange;
+
     public:
-        BossAttackFlame2(ICompositeNode* parent, Game* game)
-            : BehaviorNodeDecorator(parent), m_game(game) {}
+        BossAttackFlame2(ICompositeNode* parent, Game* game, float attackRange)
+            : BehaviorNodeDecorator(parent), m_game(game), m_attackRange(attackRange) {}
+
         Status tick() override
         {
             getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::AttackFlame2);
             getGameObject()->getSprite().setTexture(getGameObject()->getTexture2(Boss::BossStatePhaseTwo::AttackFlame2));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame2);
+
             if (m_game)
-                m_game->getPlayer().takeDamage(damage);
+            {
+                Hero& player = m_game->getPlayer();
+                sf::Vector2f bossPos = getGameObject()->getSprite().getPosition();
+                sf::Vector2f playerPos = player.getPlayerPosition();
+                float distance = std::sqrt(std::pow(bossPos.x - playerPos.x, 2) + std::pow(bossPos.y - playerPos.y, 2));
+
+                if (distance <= m_attackRange && getGameObject()->getHitbox().intersects(player.getHitbox()))
+                    player.takeDamage(damage);
+            }
+
             return Success;
         }
     };
@@ -127,16 +174,29 @@ namespace BT
     {
     private:
         Game* m_game;
+        float m_attackRange;
+
     public:
-        BossAttack3(ICompositeNode* parent, Game* game)
-            : BehaviorNodeDecorator(parent), m_game(game) {}
+        BossAttack3(ICompositeNode* parent, Game* game, float attackRange)
+            : BehaviorNodeDecorator(parent), m_game(game), m_attackRange(attackRange) {}
+
         Status tick() override
         {
             getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack3);
             getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::Attack3));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack3);
+
             if (m_game)
-                m_game->getPlayer().takeDamage(damage);
+            {
+                Hero& player = m_game->getPlayer();
+                sf::Vector2f bossPos = getGameObject()->getSprite().getPosition();
+                sf::Vector2f playerPos = player.getPlayerPosition();
+                float distance = std::sqrt(std::pow(bossPos.x - playerPos.x, 2) + std::pow(bossPos.y - playerPos.y, 2));
+
+                if (distance <= m_attackRange && getGameObject()->getHitbox().intersects(player.getHitbox()))
+                    player.takeDamage(damage);
+            }
+
             return Success;
         }
     };
@@ -145,16 +205,29 @@ namespace BT
     {
     private:
         Game* m_game;
+        float m_attackRange;
+
     public:
-        BossAttackFlame3(ICompositeNode* parent, Game* game)
-            : BehaviorNodeDecorator(parent), m_game(game) {}
+        BossAttackFlame3(ICompositeNode* parent, Game* game, float attackRange)
+            : BehaviorNodeDecorator(parent), m_game(game), m_attackRange(attackRange) {}
+
         Status tick() override
         {
             getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::AttackFlame3);
             getGameObject()->getSprite().setTexture(getGameObject()->getTexture2(Boss::BossStatePhaseTwo::AttackFlame3));
-            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame3);
+            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame2);
+
             if (m_game)
-                m_game->getPlayer().takeDamage(damage);
+            {
+                Hero& player = m_game->getPlayer();
+                sf::Vector2f bossPos = getGameObject()->getSprite().getPosition();
+                sf::Vector2f playerPos = player.getPlayerPosition();
+                float distance = std::sqrt(std::pow(bossPos.x - playerPos.x, 2) + std::pow(bossPos.y - playerPos.y, 2));
+
+                if (distance <= m_attackRange && getGameObject()->getHitbox().intersects(player.getHitbox()))
+                    player.takeDamage(damage);
+            }
+
             return Success;
         }
     };
@@ -163,16 +236,29 @@ namespace BT
     {
     private:
         Game* m_game;
+        float m_attackRange;
+
     public:
-        BossJumpAttack(ICompositeNode* parent, Game* game)
-            : BehaviorNodeDecorator(parent), m_game(game) {}
+        BossJumpAttack(ICompositeNode* parent, Game* game, float attackRange)
+            : BehaviorNodeDecorator(parent), m_game(game), m_attackRange(attackRange) {}
+
         Status tick() override
         {
             getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::BossJumpAttack);
             getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::BossJumpAttack));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::BossJumpAttack);
+
             if (m_game)
-                m_game->getPlayer().takeDamage(damage);
+            {
+                Hero& player = m_game->getPlayer();
+                sf::Vector2f bossPos = getGameObject()->getSprite().getPosition();
+                sf::Vector2f playerPos = player.getPlayerPosition();
+                float distance = std::sqrt(std::pow(bossPos.x - playerPos.x, 2) + std::pow(bossPos.y - playerPos.y, 2));
+
+                if (distance <= m_attackRange && getGameObject()->getHitbox().intersects(player.getHitbox()))
+                    player.takeDamage(damage);
+            }
+
             return Success;
         }
     };
@@ -181,16 +267,29 @@ namespace BT
     {
     private:
         Game* m_game;
+        float m_attackRange;
+
     public:
-        BossJumpAttackFlame(ICompositeNode* parent, Game* game)
-            : BehaviorNodeDecorator(parent), m_game(game) {}
+        BossJumpAttackFlame(ICompositeNode* parent, Game* game, float attackRange)
+            : BehaviorNodeDecorator(parent), m_game(game), m_attackRange(attackRange) {}
+
         Status tick() override
         {
             getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::BossJumpAttackFlame);
             getGameObject()->getSprite().setTexture(getGameObject()->getTexture2(Boss::BossStatePhaseTwo::BossJumpAttackFlame));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::BossJumpAttackFlame);
+
             if (m_game)
-                m_game->getPlayer().takeDamage(damage);
+            {
+                Hero& player = m_game->getPlayer();
+                sf::Vector2f bossPos = getGameObject()->getSprite().getPosition();
+                sf::Vector2f playerPos = player.getPlayerPosition();
+                float distance = std::sqrt(std::pow(bossPos.x - playerPos.x, 2) + std::pow(bossPos.y - playerPos.y, 2));
+
+                if (distance <= m_attackRange && getGameObject()->getHitbox().intersects(player.getHitbox()))
+                    player.takeDamage(damage);
+            }
+
             return Success;
         }
     };
@@ -228,6 +327,7 @@ namespace BT
     {
     private:
         bool m_isPlayer;
+
     public:
         RunTowardsTarget(ICompositeNode* parent, bool isPlayer)
             : BehaviorNodeDecorator(parent), m_isPlayer(isPlayer) {}
@@ -238,47 +338,36 @@ namespace BT
             if (!boss || (m_isPlayer && !boss->getCurrentTarget()))
                 return Failed;
 
-            auto target = m_isPlayer ? boss->getCurrentTarget()->getPlayerPosition() : boss->getCurrentTarget()->getPlayerPosition();
+            boss->getSprite().setTexture(boss->getTexture(Boss::BossStatePhaseOne::Run));
+
+            auto target = boss->getCurrentTarget()->getPlayerPosition();
             sf::Vector2f bossPos = boss->getSprite().getPosition();
             float directionX = target.x - bossPos.x;
 
-            if (directionX > 0)
-                boss->getSprite().move(1.0f, 0.0f);
-            else if (directionX < 0)
-                boss->getSprite().move(-1.0f, 0.0f);
+            float moveSpeed = 200.0f;
+            float deltaTime = 0.016f;
 
-            return Success;
+            if (directionX > 0)
+            {
+                boss->getSprite().move(moveSpeed * deltaTime, 0.0f);
+                boss->getSprite().setScale(2.f, 2.f);
+                boss->isFacingLeft(false);
+            }
+            else if (directionX < 0)
+            {
+                boss->getSprite().move(-moveSpeed * deltaTime, 0.0f);
+                boss->getSprite().setScale(-2.f, 2.f);
+                boss->isFacingLeft(true);
+            }
+
+            float distanceToTarget = std::sqrt(std::pow(target.x - bossPos.x, 2) + std::pow(target.y - bossPos.y, 2));
+            if (distanceToTarget <= 10.0f)
+            {
+                return Success;
+            }
+            return Running;
         }
     };
-
-    /*class RandomAttackSelector : public ICompositeNode
-    {
-    private:
-        std::vector<IActionNode*> m_children;
-    public:
-        RandomAttackSelector(ICompositeNode* parent)
-            : ICompositeNode(parent)
-        {}
-
-        void addChild(IActionNode* child)
-        {
-            m_children.push_back(child);
-        }
-
-        Status tick() override
-        {
-            if (m_children.empty())
-                return Failed;
-            int index = std::rand() % m_children.size();
-            return m_children[index]->tick();
-        }
-
-        void display() override
-        {
-            for (auto child : m_children)
-                child->display();
-        }
-    };*/
 
     class AttackOrChaseSelector : public ICompositeNode
     {
@@ -341,17 +430,46 @@ namespace BT
         }
     };
 
-    class Hurt : public BehaviorNodeDecorator<class Boss, IActionNode>
+    class Hurt : public IConditionalNode
     {
     public:
-        Hurt(ICompositeNode* parent) : BehaviorNodeDecorator(parent) {}
+        Hurt(ICompositeNode* parent, Game* game) : IConditionalNode(parent), m_game(game) {}
+
+        bool condition() override
+        {
+            if (!m_game)
+                return false;
+
+            auto* boss = dynamic_cast<Boss*>(getGameObject());
+            if (!boss)
+                return false;
+
+            Hero& player = m_game->getPlayer();
+            int damage = player.getDamage();
+
+            if (damage > 0)
+                boss->takeDamage(damage);
+                return true;
+        }
+
         Status tick() override
         {
-            getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Hurt);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::Hurt));
-            return Success;
+            if (!m_isTickingChildNode)
+            {
+                if (condition())
+                    m_isTickingChildNode = true;
+                else
+                    return Success;
+            }
+
+            return tickChildren();
         }
+
+    private:
+        Game* m_game;
+        bool m_isTickingChildNode = false;
     };
+
 
     class HurtFlame : public BehaviorNodeDecorator<class Boss, IActionNode>
     {
