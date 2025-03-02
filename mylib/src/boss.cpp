@@ -29,7 +29,9 @@ void Boss::initializeBehaviorTree()
 
     // Phase 1 actions
     new BT::BossAttack1(behavior, m_game);
+    new BT::Wait(behavior, 2.0f);
     new BT::BossAttack2(behavior, m_game);
+    new BT::Wait(behavior, 3.0f);
     new BT::BossAttack3(behavior, m_game);
     new BT::BossJumpAttack(behavior, m_game);
     new BT::RunTowardsPlayer(behavior);
@@ -63,6 +65,28 @@ void Boss::update(float deltaTime)
     findValidTarget();
     m_isAttacking = false;
 
+    performTimedAction("Attack", 3.0f, [this]() 
+        {
+        if (m_currentTarget) {
+            m_isAttacking = true;
+            setStatePhaseOne(BossStatePhaseOne::Attack1);
+        }
+    });
+
+    performTimedAction("Move", 5.0f, [this]() {
+        setStatePhaseOne(BossStatePhaseOne::Run);
+    });
+
+    for (auto& [attack, interval] : attackIntervals)
+    {
+        if (attackCooldowns[attack].getElapsedTime().asSeconds() >= interval)
+        {
+            setStatePhaseOne(attack);
+            attackCooldowns[attack].restart();
+            break;
+        }
+    }
+
     if (m_currentTarget)
     {
         Hero* hero = m_currentTarget;
@@ -71,6 +95,15 @@ void Boss::update(float deltaTime)
             int damage = getAttackDamage(m_currentStateName);
             hero->takeDamage(damage);
         }
+    }
+}
+
+void Boss::performTimedAction(const std::string& action, float interval, std::function<void()> callback)
+{
+    if (m_actionTimers[action].getElapsedTime().asSeconds() >= interval) 
+    {
+        callback();
+        m_actionTimers[action].restart();
     }
 }
 

@@ -4,6 +4,8 @@
 #include "behaviorTree.h"
 #include "gameObject.h"
 #include "game.h"
+#include <unordered_map>
+#include <functional>
 
 struct AnimationData
 {
@@ -73,6 +75,8 @@ public:
     void takeDamage(int damage) override;
     void setInvulnerable(float duration) override;
 
+    void performTimedAction(const std::string& action, float interval, std::function<void()> callback);
+
     void setHp(int health);
     int getHp() const;
     Hero* getCurrentTarget() const;
@@ -120,6 +124,8 @@ private:
     int jumpAttackFlameDamage = 40;
 
     sf::Sprite m_sprites;
+    std::unordered_map<std::string, sf::Clock> m_actionTimers;
+    std::unordered_map<std::string, float> m_actionIntervals;
     BossStatePhaseOne m_currentStateName;
     BossStatePhaseTwo m_currentStateNameP2;
 
@@ -143,6 +149,15 @@ private:
     {BossStatePhaseTwo::AttackFlame3, {7, 0.1f}},
     {BossStatePhaseTwo::BossJumpAttackFlame, {12, 0.07f}},
     {BossStatePhaseTwo::Death, {10, 0.2f}},
+    };
+
+    std::unordered_map<BossStatePhaseOne, sf::Clock> attackCooldowns;
+    std::unordered_map<BossStatePhaseOne, float> attackIntervals = 
+    {
+        {BossStatePhaseOne::Attack1, 2.0f},
+        {BossStatePhaseOne::Attack2, 4.0f},
+        {BossStatePhaseOne::Attack3, 6.0f},
+        {BossStatePhaseOne::BossJumpAttack, 8.0f}
     };
 
     std::map<BossStatePhaseOne, sf::Texture> m_texturesP1;

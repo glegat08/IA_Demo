@@ -382,4 +382,34 @@ namespace BT
             return Success;
         }
     };
+
+    class Wait : public IActionNode {
+    private:
+        sf::Time m_duration;
+        sf::Clock m_timer;
+        bool m_started = false;
+
+    public:
+        Wait(ICompositeNode* parent, float duration)
+            : IActionNode(parent), m_duration(sf::seconds(duration)) {}
+
+        Status tick() override
+    	{
+            if (!m_started) 
+            {
+                m_started = true;
+                m_timer.restart();
+            }
+
+            if (m_timer.getElapsedTime() >= m_duration) 
+            {
+                m_started = false;
+                return Success;
+            }
+
+            return Running;
+        }
+    };
+
+
 }
