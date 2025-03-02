@@ -18,8 +18,13 @@ Boss::Boss(Game* game)
     std::cout << "Boss created!" << std::endl;
 
     loadTextures();
+    initializeBehaviorTree();
     /*m_sprites.setPosition(500, 500);*/
 
+}
+
+void Boss::initializeBehaviorTree()
+{
     auto* behavior = new BT::Sequence(&m_rootNode);
     if (!behavior)
         throw std::runtime_error("memory allocation error");
@@ -28,21 +33,23 @@ Boss::Boss(Game* game)
     new BT::BossAttack1(behavior, m_game);
     new BT::BossAttack2(behavior, m_game);
     new BT::BossAttack3(behavior, m_game);
-    new BT::JumpAttack(behavior, m_game);
+    new BT::BossJumpAttack(behavior, m_game);
     new BT::RunTowardsPlayer(behavior);
     new BT::Idle(behavior);
 
     auto* ifHealthLow = new BT::IfHealthLow(behavior);
-    new BT::TransformToPhaseTwo(ifHealthLow);
+    auto* transformSequence = new BT::Sequence(ifHealthLow);
+    new BT::TransformToPhaseTwo(transformSequence);
 
     // Phase 2 actions
     auto* ifPhaseTwo = new BT::IfPhaseTwo(behavior);
-    new BT::BossAttackFlame1(ifPhaseTwo, m_game);
-    new BT::BossAttackFlame2(ifPhaseTwo, m_game);
-    new BT::BossAttackFlame3(ifPhaseTwo, m_game);
-    new BT::FlameJumpAttack(ifPhaseTwo, m_game);
-    new BT::RunFlameTowardsPlayer(ifPhaseTwo);
-    new BT::IdleFlame(ifPhaseTwo);
+    auto* phaseTwoSequence = new BT::Sequence(ifPhaseTwo);
+    new BT::BossAttackFlame1(phaseTwoSequence, m_game);
+    new BT::BossAttackFlame2(phaseTwoSequence, m_game);
+    new BT::BossAttackFlame3(phaseTwoSequence, m_game);
+    new BT::BossJumpAttackFlame(phaseTwoSequence, m_game);
+    new BT::RunFlameTowardsPlayer(phaseTwoSequence);
+    new BT::IdleFlame(phaseTwoSequence);
 
     new BT::Hurt(behavior);
     new BT::HurtFlame(behavior);
@@ -252,7 +259,7 @@ int Boss::getAttackDamage(BossStatePhaseOne attackType) const
             return attack2Damage;
 		case BossStatePhaseOne::Attack3:
             return attack3Damage;
-		case BossStatePhaseOne::JumpAttack:
+		case BossStatePhaseOne::BossJumpAttack:
             return jumpAttackDamage;
 		default:
             return 0;
@@ -269,7 +276,7 @@ int Boss::getAttackDamage(BossStatePhaseTwo attackType) const
             return attackFlame2Damage;
 		case BossStatePhaseTwo::AttackFlame3:
             return attackFlame3Damage;
-		case BossStatePhaseTwo::JumpAttackFlame:
+		case BossStatePhaseTwo::BossJumpAttackFlame:
             return jumpAttackFlameDamage;
 		default: 
             return 0;
@@ -278,6 +285,8 @@ int Boss::getAttackDamage(BossStatePhaseTwo attackType) const
 
 BT::Status Boss::tick()
 {
+    findValidTarget();
+
     return m_rootNode.tick();
 }
 
@@ -322,7 +331,7 @@ void Boss::loadTextures()
     {
         {BossStatePhaseOne::Idle, "IDLE.png"},
         {BossStatePhaseOne::Run, "RUN.png"},
-        {BossStatePhaseOne::JumpAttack, "JUMP ATTACK.png"},
+        {BossStatePhaseOne::BossJumpAttack, "JUMP ATTACK.png"},
         {BossStatePhaseOne::Hurt, "HURT.png"},
         {BossStatePhaseOne::Attack1, "ATTACK 1.png"},
         {BossStatePhaseOne::Attack2, "ATTACK 2.png"},
@@ -340,7 +349,7 @@ void Boss::loadTextures()
     std::vector<std::pair<BossStatePhaseTwo, std::string>> texturesP2 = {
         {BossStatePhaseTwo::IdleFlame, "IDLE (FLAMING SWORD).png"},
         {BossStatePhaseTwo::RunFlame, "RUN (FLAMING SWORD).png"},
-        {BossStatePhaseTwo::JumpAttackFlame, "JUMP ATTACK (FLAMING SWORD).png"},
+        {BossStatePhaseTwo::BossJumpAttackFlame, "JUMP ATTACK (FLAMING SWORD).png"},
         {BossStatePhaseTwo::HurtFlame, "HURT (FLAMING SWORD).png"},
         {BossStatePhaseTwo::AttackFlame1, "ATTACK 1 (FLAMING SWORD).png"},
         {BossStatePhaseTwo::AttackFlame2, "ATTACK 2 (FLAMING SWORD).png"},

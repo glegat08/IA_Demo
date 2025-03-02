@@ -126,7 +126,7 @@ namespace BT
     private:
         void add(IComponentNode* node) override
         {
-            if (getChildren().size() >= 1)
+            if (hasChild())
                 throw;
 
             ICompositeNode::add(node);
@@ -401,8 +401,13 @@ namespace BT
         {
         }
 
+        //virtual bool condition()
+        //{
+	       // 
+        //}
+
         GameObjectType* getGameObject() { return static_cast<GameObjectType*>(NodeType::getGameObject()); }
-        const GameObjectType* getGameObject() const { return static_cast<GameObjectType*>(NodeType::getGameObject()); }
+        const GameObjectType* getGameObject() const { return static_cast<const GameObjectType*>(NodeType::getGameObject()); }
     };
 
 }

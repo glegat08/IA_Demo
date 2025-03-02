@@ -18,7 +18,7 @@ namespace BossStateNames
 	{
         Idle,
         Run,
-        JumpAttack,
+        BossJumpAttack,
         Hurt,
         Attack1,
         Attack2,
@@ -30,7 +30,7 @@ namespace BossStateNames
 	{
         IdleFlame,
         RunFlame,
-        JumpAttackFlame,
+        BossJumpAttackFlame,
         HurtFlame,
         Death,
         AttackFlame1,
@@ -124,6 +124,7 @@ public:
     {}
 
     Boss(Game* game);
+    void initializeBehaviorTree();
 
     void update(float deltaTime);
     void findValidTarget();
@@ -202,7 +203,7 @@ private:
     {BossStatePhaseOne::Attack1, {7, 0.12f}},
     {BossStatePhaseOne::Attack2, {6, 0.15f}},
     {BossStatePhaseOne::Attack3, {7, 0.1f}},
-    {BossStatePhaseOne::JumpAttack, {12, 0.08f}},
+    {BossStatePhaseOne::BossJumpAttack, {12, 0.08f}},
     {BossStatePhaseOne::Transformation, {17, 0.12f}}
     };
 
@@ -213,7 +214,7 @@ private:
     {BossStatePhaseTwo::AttackFlame1, {7, 0.1f}},
     {BossStatePhaseTwo::AttackFlame2, {6, 0.12f}},
     {BossStatePhaseTwo::AttackFlame3, {7, 0.1f}},
-    {BossStatePhaseTwo::JumpAttackFlame, {12, 0.07f}},
+    {BossStatePhaseTwo::BossJumpAttackFlame, {12, 0.07f}},
     {BossStatePhaseTwo::Death, {10, 0.2f}},
     };
 

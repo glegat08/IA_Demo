@@ -39,13 +39,7 @@ void Game::setBoss()
 
 Boss* Game::getBoss() const
 {
-    if (m_boss) {
-        return m_boss.get();
-    }
-    else {
-        std::cerr << "Error: Boss is null!" << std::endl;
-        return nullptr;
-    }
+    return m_boss.get();
 }
 
 void Game::checkCollision()
