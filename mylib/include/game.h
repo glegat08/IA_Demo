@@ -1,7 +1,6 @@
 #pragma once
 
 #include "hero.h"
-#include "boss.h"
 #include "sceneBase.h"
 
 class Boss;
@@ -10,33 +9,28 @@ class Game : public SceneBase
 {
 public:
     Game(sf::RenderWindow* window, const float& framerate);
-    ~Game() = default;
+    ~Game() override = default;
 
     // PLAYER
     void setPlayer();
-    Hero& getPlayer();
     void setBoss();
+    Hero& getPlayer();
     Boss* getBoss() const;
-    void removeProjectiles();
     void checkCollision();
 
     // ENEMIES
-    void setEnemiesCount(int count);
     void spawnEnemy(sf::RenderWindow* window);
-    void removeDeadEnemies();
 
     // GAME MAP
     void setBackground(sf::RenderWindow* window);
     void setGroundTexture(sf::RenderWindow* window);
     sf::FloatRect getGroundHitbox();
-    sf::FloatRect getPlatformHitbox();
+	sf::FloatRect getPlatformHitbox();
+    sf::FloatRect GetWindowCollision();
 
-    void setAudio();
     void processInput(const sf::Event& event) override;
     void update(const float& deltaTime) override;
     void render() override;
-    void displayFPS();
-    void displayScore();
 
     void drawHitboxes();
 
@@ -44,7 +38,6 @@ private:
     int m_enemiesCount;
     Hero m_player;
     std::unique_ptr<Boss> m_boss;
-
 
     // MAP
     sf::RectangleShape m_rectangle_shape;
@@ -55,8 +48,8 @@ private:
     sf::Texture m_platformTexture;
 
     // BACKGROUND
-    sf::Texture m_backgroundTexture;
-    sf::RectangleShape m_backgroundShape;
+	sf::Texture m_backgroundTexture;
+	sf::RectangleShape m_backgroundShape;
     sf::Music m_gameMusic;
 
     // SCORE

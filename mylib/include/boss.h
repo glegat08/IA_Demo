@@ -57,6 +57,8 @@ public:
     void initializeBehaviorTree();
 
     void update(float deltaTime);
+    void updateTimedActions();
+    void updateMovementAndAttack(float deltaTime);
     void findValidTarget();
     void switchToPhaseTwo();
     void loadTextures();
@@ -71,6 +73,7 @@ public:
     bool isShooting() override;
     bool isAttacking() override;
     bool isInvulnerable() override;
+    bool isCloseToTarget() const;
     int getHp() override;
     void takeDamage(int damage) override;
     void setInvulnerable(float duration) override;
@@ -79,7 +82,10 @@ public:
 
     void setHp(int health);
     int getHp() const;
+    sf::FloatRect getHitbox() const;
     Hero* getCurrentTarget() const;
+    void moveTowardsPlayer(float deltaTime);
+    void retreatFromPlayer(float deltaTime);
 
     //attack
     int getAttackDamage(BossStatePhaseOne attackType) const;
@@ -91,7 +97,6 @@ public:
 
     //GETTERS
     sf::Sprite& getSprite();
-    /*sf::FloatRect getHitbox() const;*/
 
     sf::Texture& getTexture(const BossStatePhaseOne& stateName_);
     sf::Texture& getTexture2(const BossStatePhaseTwo& stateName_);
@@ -111,7 +116,10 @@ private:
     int m_currentFrame = 0;
     int m_frameCount = 0;
     float m_frameDuration = 0.0f;
+    float m_speed = 70.f;
     sf::Clock m_animationClock;
+    sf::Clock m_runAnimationClock;
+    sf::Clock m_attackDelayClock;
 
     //attack ratio
     int attack1Damage = 10;

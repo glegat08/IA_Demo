@@ -18,7 +18,6 @@ Boss::Boss(Game* game)
 
     loadTextures();
     initializeBehaviorTree();
-    /*m_sprites.setPosition(500, 500);*/
 }
 
 void Boss::initializeBehaviorTree()
@@ -27,21 +26,27 @@ void Boss::initializeBehaviorTree()
     if (!behavior)
         throw std::runtime_error("memory allocation error");
 
-    // Phase 1 actions
-    new BT::BossAttack1(behavior, m_game);
-    new BT::Wait(behavior, 2.0f);
-    new BT::BossAttack2(behavior, m_game);
-    new BT::Wait(behavior, 3.0f);
-    new BT::BossAttack3(behavior, m_game);
-    new BT::BossJumpAttack(behavior, m_game);
-    new BT::RunTowardsPlayer(behavior);
     new BT::Idle(behavior);
+    new BT::Wait(behavior, 4.0f);
+    new BT::RunTowardsPlayer(behavior);
+    new BT::Wait(behavior, 2.0f);
+
+    new BT::BossAttack1(behavior, m_game);
+    new BT::Wait(behavior, 1.0f);
+    new BT::BossAttack2(behavior, m_game);
+    new BT::Wait(behavior, 1.0f);
+    new BT::BossAttack3(behavior, m_game);
+    new BT::Wait(behavior, 1.0f);
+    new BT::BossJumpAttack(behavior, m_game);
+    new BT::Wait(behavior, 2.0f);
+
+    new BT::RunTowardsPlayer(behavior);
+    new BT::Wait(behavior, 2.0f);
 
     auto* ifHealthLow = new BT::IfHealthLow(behavior);
     auto* transformSequence = new BT::Sequence(ifHealthLow);
     new BT::TransformToPhaseTwo(transformSequence);
 
-    // Phase 2 actions
     auto* ifPhaseTwo = new BT::IfPhaseTwo(behavior);
     auto* phaseTwoSequence = new BT::Sequence(ifPhaseTwo);
     new BT::BossAttackFlame1(phaseTwoSequence, m_game);
@@ -62,39 +67,24 @@ void Boss::update(float deltaTime)
 
     updateAnimation();
     updateInvulnerabilityEffect();
-    findValidTarget();
-    m_isAttacking = false;
+    //findValidTarget();
+}
 
-    performTimedAction("Attack", 3.0f, [this]() 
-        {
-        if (m_currentTarget) {
-            m_isAttacking = true;
-            setStatePhaseOne(BossStatePhaseOne::Attack1);
-        }
-    });
+void Boss::retreatFromPlayer(float deltaTime)
+{
+    Hero* hero = m_currentTarget;
+    sf::Vector2f bossPos = m_sprites.getPosition();
+    sf::Vector2f heroPos = hero->getPlayerPosition();
 
-    performTimedAction("Move", 5.0f, [this]() {
-        setStatePhaseOne(BossStatePhaseOne::Run);
-    });
-
-    for (auto& [attack, interval] : attackIntervals)
+    if (heroPos.x > bossPos.x)
     {
-        if (attackCooldowns[attack].getElapsedTime().asSeconds() >= interval)
-        {
-            setStatePhaseOne(attack);
-            attackCooldowns[attack].restart();
-            break;
-        }
+        m_sprites.move(-m_speed * deltaTime, 0.f);
+        m_sprites.setScale(-2.f, 2.f);
     }
-
-    if (m_currentTarget)
+    else
     {
-        Hero* hero = m_currentTarget;
-        if (isAttacking() && hero->getHitbox().intersects(m_sprites.getGlobalBounds()))
-        {
-            int damage = getAttackDamage(m_currentStateName);
-            hero->takeDamage(damage);
-        }
+        m_sprites.move(m_speed * deltaTime, 0.f);
+        m_sprites.setScale(2.f, 2.f);
     }
 }
 
@@ -105,6 +95,16 @@ void Boss::performTimedAction(const std::string& action, float interval, std::fu
         callback();
         m_actionTimers[action].restart();
     }
+}
+
+bool Boss::isCloseToTarget() const
+{
+    if (m_currentTarget) 
+    {
+        sf::Vector2f distance = m_sprites.getPosition() - m_currentTarget->getPlayerPosition();
+        return distance.x < 100.f && distance.y < 100.f;
+    }
+    return false;
 }
 
 void Boss::findValidTarget()
@@ -123,7 +123,6 @@ void Boss::findValidTarget()
     }
 }
 
-
 void Boss::switchToPhaseTwo()
 {
     if (!m_phaseTwoActive)
@@ -135,31 +134,28 @@ void Boss::switchToPhaseTwo()
 
 void Boss::setStatePhaseOne(BossStatePhaseOne newState)
 {
-    if (m_currentStateName == newState)
-        return;
-
-    m_currentStateName = newState;
-    m_sprites.setTexture(getTexture(newState));
-
-    m_currentFrame = 0;
-    m_frameCount = phaseOneAnimations[newState].frameCount;
-    m_frameDuration = phaseOneAnimations[newState].frameDuration;
-    m_animationClock.restart();
+    if (m_currentStateName != newState)
+    {
+        m_currentStateName = newState;
+        m_sprites.setTexture(getTexture(newState));
+        m_currentFrame = 0;
+        m_frameCount = phaseOneAnimations[newState].frameCount;
+        m_frameDuration = phaseOneAnimations[newState].frameDuration;
+        m_animationClock.restart();
+    }
 }
-
 
 void Boss::setStatePhaseTwo(BossStatePhaseTwo newState)
 {
-    if (m_currentStateNameP2 == newState)
-        return;
-
-    m_currentStateNameP2 = newState;
-    m_sprites.setTexture(getTexture2(newState));
-
-    m_currentFrame = 0;
-    m_frameCount = phaseTwoAnimations[newState].frameCount;
-    m_frameDuration = phaseTwoAnimations[newState].frameDuration;
-    m_animationClock.restart();
+    if (m_currentStateNameP2 != newState)
+    {
+        m_currentStateNameP2 = newState;
+        m_sprites.setTexture(getTexture2(newState));
+        m_currentFrame = 0;
+        m_frameCount = phaseTwoAnimations[newState].frameCount;
+        m_frameDuration = phaseTwoAnimations[newState].frameDuration;
+        m_animationClock.restart();
+    }
 }
 
 void Boss::updateAnimation()
@@ -278,6 +274,58 @@ void Boss::draw(sf::RenderWindow& window) const
 int Boss::getHp() const
 {
     return m_health;
+}
+
+//sf::FloatRect Boss::getHitbox() const
+//{
+//    return m_sprites.getGlobalBounds();
+//}
+
+sf::FloatRect Boss::getHitbox() const
+{
+    sf::FloatRect spriteRect = m_sprites.getGlobalBounds();
+    float width, height, offsetX, y;
+
+    width = spriteRect.width * 0.3f;
+    height = spriteRect.height * 0.9f;
+
+    offsetX = spriteRect.width * 0.35f;
+    y = spriteRect.top + (spriteRect.height - height) * 0.3f;
+
+    switch (m_currentStateName)
+    {
+    case BossStatePhaseOne::Idle:
+        width = spriteRect.width * 0.35f;
+        offsetX = spriteRect.width * 0.32f;
+        break;
+    case BossStatePhaseOne::Run:
+        width = spriteRect.width * 0.35f;
+        offsetX = spriteRect.width * 0.32f;
+        break;
+    case BossStatePhaseOne::Attack1:
+    case BossStatePhaseOne::Attack2:
+    case BossStatePhaseOne::Attack3:
+        width = spriteRect.width * 0.5f;
+        offsetX = spriteRect.width * 0.25f;
+        break;
+    case BossStatePhaseOne::BossJumpAttack:
+        width = spriteRect.width * 0.55f;
+        offsetX = spriteRect.width * 0.2f;
+        y = spriteRect.top + (spriteRect.height - height) * 0.25f;
+        break;
+    case BossStatePhaseOne::Hurt:
+        width = spriteRect.width * 0.28f;
+        offsetX = spriteRect.width * 0.36f;
+        break;
+    case BossStatePhaseOne::Transformation:
+        width = spriteRect.width * 0.4f;
+        offsetX = spriteRect.width * 0.3f;
+        break;
+    }
+
+    float x = spriteRect.left + offsetX;
+
+    return sf::FloatRect(x, y, width, height);
 }
 
 int Boss::getAttackDamage(BossStatePhaseOne attackType) const

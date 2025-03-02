@@ -1,9 +1,8 @@
-#include "state.h"
+﻿#include "state.h"
 
 #include <SFML/Graphics.hpp>
 
 #include "hero.h"
-#include "boss.h"
 
 bool IState::m_dashAvailable = true;
 sf::Clock IState::m_dashCooldownClock;
@@ -160,7 +159,10 @@ void JumpState::handleInput(Hero& hero)
     updateDirection(hero);
 
     if (isDodging())
-        hero.m_stateManager.pushState(&hero, HeroStateNames::stateName::dodge);
+    {
+        hero.getAirDodge(true);
+        hero.getStateManager().pushState(&hero, HeroStateNames::stateName::dodge);
+    }
 
     if (isAttacking())
         hero.setState(HeroStateNames::stateName::jump_attack);
@@ -186,7 +188,7 @@ void JumpState::update(Hero& hero, float deltaTime)
 
     if (hero.isOnGround())
     {
-        hero.m_isJumping = false;
+        hero.getIsJumping(false);
 
         if (isGoingLeft() || isGoingRight())
             hero.setState(HeroStateNames::stateName::run);
@@ -209,9 +211,9 @@ void JumpState::setTexture(Hero& hero)
 {
     hero.getSprite().setTexture(hero.getTexture(HeroStateNames::stateName::jump));
 
-    if (!hero.m_isJumping)
+    if (!hero.getIsJumping())
     {
-        hero.m_isJumping = true;
+        hero.getIsJumping(true);
         hero.setVerticalVelocity(-250.f);
     }
 }
@@ -235,7 +237,7 @@ void JumpAttack::update(Hero& hero, float deltaTime)
 
     if (hero.isOnGround())
     {
-        hero.m_isJumping = false;
+        hero.getIsJumping(false);
 
         if (isGoingLeft() || isGoingRight())
             hero.setState(HeroStateNames::stateName::run);
@@ -360,8 +362,9 @@ void DodgeState::handleInput(Hero& hero)
 {
     if (m_elapsedTime.getElapsedTime().asSeconds() >= m_dodgeDuration)
     {
-        if (!hero.m_stateManager.isStateStackEmpty())
-            hero.m_stateManager.popState(&hero);
+        hero.getAirDodge(false);
+        if (!hero.getStateManager().isStateStackEmpty())
+            hero.getStateManager().popState(&hero);
         else
         {
             if (isGoingLeft() || isGoingRight())
@@ -396,241 +399,52 @@ void DodgeState::setTexture(Hero& hero)
     hero.getSprite().setTexture(hero.getTexture(HeroStateNames::stateName::dodge));
 }
 
-//  ///////////////////////////////////////////////////////////////////
-// /////////////////////// PHASE 1 ///////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-//
-//void BossIdleState::update(Boss& boss, float deltaTime)
-//{
-//	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
-//	{
-//		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
-//		sf::IntRect frameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
-//		boss.getSprite().setTextureRect(frameRect);
-//		m_elapsedTime.restart();
-//	}
-//}
-//
-//void BossIdleState::setBossTexture(Boss& boss)
-//{
-//	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Idle));
-//	boss.getSprite().setScale(2.f, 2.f);
-//}
-//
-//void BossRunState::update(Boss& boss, float deltaTime)
-//{
-//	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
-//	{
-//		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
-//		sf::IntRect frameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
-//		boss.getSprite().setTextureRect(frameRect);
-//		m_elapsedTime.restart();
-//	}
-//}
-//
-//void BossRunState::setBossTexture(Boss& boss)
-//{
-//	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Run));
-//	boss.getSprite().setTextureRect(sf::IntRect(0, 0, m_frameWidth, m_frameHeight));
-//}
-//
-//void BossHurtState::update(Boss& boss, float deltaTime)
-//{
-//	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime) 
-//	{
-//		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
-//		sf::IntRect frameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
-//		boss.getSprite().setTextureRect(frameRect);
-//		m_elapsedTime.restart();
-//	}
-//}
-//
-//void BossHurtState::setBossTexture(Boss& boss)
-//{
-//	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Hurt));
-//	boss.getSprite().setTextureRect(sf::IntRect(0, 0, m_frameWidth, m_frameHeight));
-//}
-//
-//void BossFirstAttackState::update(Boss& boss, float deltaTime)
-//{
-//	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime) 
-//	{
-//		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
-//		sf::IntRect frameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
-//		boss.getSprite().setTextureRect(frameRect);
-//		m_elapsedTime.restart();
-//	}
-//}
-//
-//void BossFirstAttackState::setBossTexture(Boss& boss)
-//{
-//	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Attack1));
-//	boss.getSprite().setTextureRect(sf::IntRect(0, 0, m_frameWidth, m_frameHeight));
-//}
-//
-//void BossSecondAttackState::update(Boss& boss, float deltaTime)
-//{
-//	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
-//	{
-//		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
-//		sf::IntRect frameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
-//		boss.getSprite().setTextureRect(frameRect);
-//		m_elapsedTime.restart();
-//	}
-//}
-//
-//void BossSecondAttackState::setBossTexture(Boss& boss)
-//{
-//	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Attack2));
-//	boss.getSprite().setTextureRect(sf::IntRect(0, 0, m_frameWidth, m_frameHeight));
-//}
-//
-//void BossThirdAttackState::update(Boss& boss, float deltaTime) {
-//	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime) 
-//	{
-//		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
-//		sf::IntRect frameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
-//		boss.getSprite().setTextureRect(frameRect);
-//		m_elapsedTime.restart();
-//	}
-//}
-//
-//void BossThirdAttackState::setBossTexture(Boss& boss) {
-//	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Attack3));
-//	boss.getSprite().setTextureRect(sf::IntRect(0, 0, m_frameWidth, m_frameHeight));
-//}
-//
-//void BossTransformationState::update(Boss& boss, float deltaTime) {
-//	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
-//	{
-//		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
-//		sf::IntRect frameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
-//		boss.getSprite().setTextureRect(frameRect);
-//		m_elapsedTime.restart();
-//	}
-//}
-//
-//void BossTransformationState::setBossTexture(Boss& boss) {
-//	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Attack3));
-//	boss.getSprite().setTextureRect(sf::IntRect(0, 0, m_frameWidth, m_frameHeight));
-//}
-//
-//  ///////////////////////////////////////////////////////////////////
-// /////////////////////// PHASE 2 ///////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-//
-//
-//void BossIdleFlameState::update(Boss& boss, float deltaTime)
-//{
-//	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
-//	{
-//		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
-//		sf::IntRect frameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
-//		boss.getSprite().setTextureRect(frameRect);
-//		m_elapsedTime.restart();
-//	}
-//}
-//
-//void BossIdleFlameState::setBossTexture(Boss& boss)
-//{
-//	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Idle));
-//	boss.getSprite().setScale(2.f, 2.f);
-//}
-//
-//void BossRunFlameState::update(Boss& boss, float deltaTime)
-//{
-//	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
-//	{
-//		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
-//		sf::IntRect frameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
-//		boss.getSprite().setTextureRect(frameRect);
-//		m_elapsedTime.restart();
-//	}
-//}
-//
-//void BossRunFlameState::setBossTexture(Boss& boss)
-//{
-//	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Run));
-//	boss.getSprite().setTextureRect(sf::IntRect(0, 0, m_frameWidth, m_frameHeight));
-//}
-//
-//void BossHurtFlameState::update(Boss& boss, float deltaTime)
-//{
-//	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
-//	{
-//		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
-//		sf::IntRect frameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
-//		boss.getSprite().setTextureRect(frameRect);
-//		m_elapsedTime.restart();
-//	}
-//}
-//
-//void BossHurtFlameState::setBossTexture(Boss& boss)
-//{
-//	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Hurt));
-//	boss.getSprite().setTextureRect(sf::IntRect(0, 0, m_frameWidth, m_frameHeight));
-//}
-//
-//void BossFirstAttackFlameState::update(Boss& boss, float deltaTime)
-//{
-//	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
-//	{
-//		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
-//		sf::IntRect frameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
-//		boss.getSprite().setTextureRect(frameRect);
-//		m_elapsedTime.restart();
-//	}
-//}
-//
-//void BossFirstAttackFlameState::setBossTexture(Boss& boss)
-//{
-//	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Attack1));
-//	boss.getSprite().setTextureRect(sf::IntRect(0, 0, m_frameWidth, m_frameHeight));
-//}
-//
-//void BossSecondAttackFlameState::update(Boss& boss, float deltaTime)
-//{
-//	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
-//	{
-//		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
-//		sf::IntRect frameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
-//		boss.getSprite().setTextureRect(frameRect);
-//		m_elapsedTime.restart();
-//	}
-//}
-//
-//void BossSecondAttackFlameState::setBossTexture(Boss& boss)
-//{
-//	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Attack2));
-//	boss.getSprite().setTextureRect(sf::IntRect(0, 0, m_frameWidth, m_frameHeight));
-//}
-//
-//void BossThirdAttackFlameState::update(Boss& boss, float deltaTime) {
-//	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
-//	{
-//		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
-//		sf::IntRect frameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
-//		boss.getSprite().setTextureRect(frameRect);
-//		m_elapsedTime.restart();
-//	}
-//}
-//
-//void BossThirdAttackFlameState::setBossTexture(Boss& boss) {
-//	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Attack3));
-//	boss.getSprite().setTextureRect(sf::IntRect(0, 0, m_frameWidth, m_frameHeight));
-//}
-//
-//void BossDeathState::update(Boss& boss, float deltaTime) {
-//	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
-//	{
-//		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
-//		sf::IntRect frameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
-//		boss.getSprite().setTextureRect(frameRect);
-//		m_elapsedTime.restart();
-//	}
-//}
-//
-//void BossDeathState::setBossTexture(Boss& boss) {
-//	boss.getSprite().setTexture(boss.getTexture(BossStateNames::BossStatePhaseOne::Attack3));
-//	boss.getSprite().setTextureRect(sf::IntRect(0, 0, m_frameWidth, m_frameHeight));
-//}
+// HURT STATE
+void HurtState::handleInput(Hero& hero)
+{
+    if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
+    {
+        hero.getIsHurt(false);
+        if (isGoingLeft() || isGoingRight())
+            hero.setState(HeroStateNames::stateName::run);
+        else
+            hero.setState(HeroStateNames::stateName::idle);
+    }
+}
+
+void HurtState::update(Hero& hero, float deltaTime)
+{
+    if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
+    {
+        m_currentFrame = (m_currentFrame + 1) % m_frameCount;
+        m_elapsedTime.restart();
+        sf::IntRect currentFrameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
+        hero.getSprite().setTextureRect(currentFrameRect);
+    }
+}
+
+void HurtState::setTexture(Hero& hero)
+{
+    hero.getSprite().setTexture(hero.getTexture(HeroStateNames::stateName::hurt));
+}
+
+// DEATH STATE
+void DeathState::handleInput(Hero& hero)
+{
+}
+
+void DeathState::update(Hero& hero, float deltaTime)
+{
+    if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
+    {
+        m_currentFrame = (m_currentFrame + 1) % m_frameCount;
+        m_elapsedTime.restart();
+        sf::IntRect currentFrameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
+        hero.getSprite().setTextureRect(currentFrameRect);
+    }
+}
+
+void DeathState::setTexture(Hero& hero)
+{
+    hero.getSprite().setTexture(hero.getTexture(HeroStateNames::stateName::death));
+}

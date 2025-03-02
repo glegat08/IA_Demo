@@ -199,6 +199,7 @@ namespace BT
             auto boss = dynamic_cast<class Boss*>(getGameObject());
             if (!boss || !boss->getCurrentTarget())
                 return false;
+
             sf::Vector2f bossPos = boss->getSprite().getPosition();
             sf::Vector2f targetPos = boss->getCurrentTarget()->getPlayerPosition();
             float dx = bossPos.x - targetPos.x;
@@ -213,32 +214,34 @@ namespace BT
         }
     };
 
-    class RunToTarget : public IActionNode
+    class RunToTarget : public BehaviorNodeDecorator<class Boss, IActionNode>
     {
     public:
-        RunToTarget(ICompositeNode* parent) : IActionNode(parent) {}
+        RunToTarget(ICompositeNode* parent) : BehaviorNodeDecorator(parent) {}
+
         Status tick() override
         {
             auto boss = dynamic_cast<class Boss*>(getGameObject());
             if (!boss || !boss->getCurrentTarget())
                 return Failed;
+
+            getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::BossJumpAttack));
+
             sf::Vector2f bossPos = boss->getSprite().getPosition();
             sf::Vector2f targetPos = boss->getCurrentTarget()->getPlayerPosition();
-            sf::Vector2f direction = targetPos - bossPos;
-            float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-            if (length > 0.0001f)
-            {
-                direction.x /= length;
-                direction.y /= length;
-            }
-            else
-            {
-                return Failed;
-            }
-            float speed = 2.0f;
-            boss->getSprite().move(direction.x * speed, direction.y * speed);
-            return Success;
 
+            float directionX = targetPos.x - bossPos.x;
+
+            if (directionX > 0)
+            {
+                boss->getSprite().move(1.0f, 0.0f);
+            }
+            else if (directionX < 0)
+            {
+                boss->getSprite().move(-1.0f, 0.0f);
+            }
+
+            return Success;
         }
 
         void display() override
@@ -251,13 +254,20 @@ namespace BT
     {
     public:
         RunTowardsPlayer(ICompositeNode* parent) : BehaviorNodeDecorator(parent) {}
+
         Status tick() override
         {
-            return RunToTarget(getParent()).tick();
+            RunToTarget runToTarget(getParent());
+            return runToTarget.tick();
+        }
+
+        void display() override
+        {
+            std::cout << "RunTowardsPlayer" << std::endl;
         }
     };
 
-    class RandomAttackSelector : public ICompositeNode
+    /*class RandomAttackSelector : public ICompositeNode
     {
     private:
         std::vector<IActionNode*> m_children;
@@ -284,7 +294,7 @@ namespace BT
             for (auto child : m_children)
                 child->display();
         }
-    };
+    };*/
 
     class AttackOrChaseSelector : public ICompositeNode
     {
@@ -410,6 +420,4 @@ namespace BT
             return Running;
         }
     };
-
-
 }

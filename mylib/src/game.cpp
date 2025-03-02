@@ -12,24 +12,23 @@ Game::Game(sf::RenderWindow* window, const float& framerate)
     setBoss();
 }
 
-//Game::~Game()
-//{
-
-//}
-
 void Game::setPlayer()
 {
-    m_player.getSprite().setPosition(100, getGroundHitbox().top - m_player.getHitbox().height);
+    m_player.getSprite().setPosition(100, 100);
+
+    m_player.setState(HeroStateNames::stateName::jump);
+
+    m_player.setOnGround(false);
+}
+
+void Game::setBoss()
+{
+    m_boss->getSprite().setPosition(600, getGroundHitbox().top - m_boss->getHitbox().height);
 }
 
 Hero& Game::getPlayer()
 {
     return m_player;
-}
-
-void Game::setBoss()
-{
-	m_boss->getSprite().setPosition(100, getGroundHitbox().top - m_player.getHitbox().height);
 }
 
 Boss* Game::getBoss() const
@@ -46,6 +45,27 @@ void Game::checkCollision()
     }
     else
         m_player.setOnGround(false);
+
+    sf::FloatRect windowBounds = GetWindowCollision();
+    sf::FloatRect playerHitbox = m_player.getHitbox();
+
+    if (playerHitbox.left < windowBounds.left)
+    {
+        m_player.getSprite().setPosition
+        (
+            windowBounds.left + (m_player.getPlayerPosition().x - playerHitbox.left),
+            m_player.getPlayerPosition().y
+        );
+    }
+
+    if (playerHitbox.left + playerHitbox.width > windowBounds.left + windowBounds.width)
+    {
+        m_player.getSprite().setPosition
+        (
+            m_player.getPlayerPosition().x - ((playerHitbox.left + playerHitbox.width) - (windowBounds.left + windowBounds.width)),
+            m_player.getPlayerPosition().y
+        );
+    }
 }
 
 void Game::setBackground(sf::RenderWindow* window)
@@ -79,6 +99,11 @@ void Game::setGroundTexture(sf::RenderWindow* window)
     }
 }
 
+sf::FloatRect Game::GetWindowCollision()
+{
+    return sf::FloatRect(0, 0, m_renderWindow->getSize().x, m_renderWindow->getSize().y);
+}
+
 sf::FloatRect Game::getGroundHitbox()
 {
     return m_rectangle_shape.getGlobalBounds();
@@ -97,7 +122,7 @@ void Game::processInput(const sf::Event& event)
 void Game::update(const float& deltaTime)
 {
     m_player.update(deltaTime);
-	m_boss->update(deltaTime);
+    m_boss->update(deltaTime);
 
     float currentTime = m_fpsClock.getElapsedTime().asMilliseconds();
     if (currentTime - m_fpsStartTime > 1000)
