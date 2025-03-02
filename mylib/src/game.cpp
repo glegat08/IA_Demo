@@ -10,10 +10,6 @@ Game::Game(sf::RenderWindow* window, const float& framerate)
     setPlayer();
 }
 
-//Game::~Game()
-//{
-//}
-
 void Game::setPlayer()
 {
     m_player.getSprite().setPosition(100, 100);

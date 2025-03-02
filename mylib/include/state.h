@@ -149,3 +149,35 @@ protected:
 	const float m_dodgeSpeed = 250.0f;
 	const float m_dodgeDuration = 0.01f;
 };
+
+class HurtState : public IState
+{
+public:
+	void handleInput(Hero& hero) override;
+	void update(Hero& hero, float deltaTime) override;
+	void setTexture(Hero& hero) override;
+
+protected:
+	sf::Clock m_elapsedTime;
+	const float m_frameTime = 0.03f;
+	int m_currentFrame = 0;
+	const int m_frameCount = 3;
+	const int m_frameWidth = 96;
+	const int m_frameHeight = 34;
+};
+
+class DeathState : public IState
+{
+public:
+	void handleInput(Hero& hero) override;
+	void update(Hero& hero, float deltaTime) override;
+	void setTexture(Hero& hero) override;
+
+protected:
+	sf::Clock m_elapsedTime;
+	const float m_frameTime = 1.f;
+	int m_currentFrame = 0;
+	const int m_frameCount = 9;
+	const int m_frameWidth = 96;
+	const int m_frameHeight = 34;
+};

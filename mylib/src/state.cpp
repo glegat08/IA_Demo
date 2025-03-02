@@ -160,8 +160,8 @@ void JumpState::handleInput(Hero& hero)
 
     if (isDodging()) 
     {
-        hero.m_isAirDodging = true;
-        hero.m_stateManager.pushState(&hero, HeroStateNames::stateName::dodge);
+        hero.getAirDodge(true);
+        hero.getStateManager().pushState(&hero, HeroStateNames::stateName::dodge);
     }
 
     if (isAttacking())
@@ -188,7 +188,7 @@ void JumpState::update(Hero& hero, float deltaTime)
 
     if (hero.isOnGround())
     {
-        hero.m_isJumping = false;
+        hero.getIsJumping(false);
 
         if (isGoingLeft() || isGoingRight())
             hero.setState(HeroStateNames::stateName::run);
@@ -211,9 +211,9 @@ void JumpState::setTexture(Hero& hero)
 {
 	hero.getSprite().setTexture(hero.getTexture(HeroStateNames::stateName::jump));
 
-    if (!hero.m_isJumping) 
+    if (!hero.getIsJumping()) 
     {
-        hero.m_isJumping = true;
+        hero.getIsJumping(true);
         hero.setVerticalVelocity(-250.f);
     }
 }
@@ -237,7 +237,7 @@ void JumpAttack::update(Hero& hero, float deltaTime)
 
     if (hero.isOnGround())
     {
-        hero.m_isJumping = false;
+        hero.getIsJumping(false);
 
         if (isGoingLeft() || isGoingRight())
             hero.setState(HeroStateNames::stateName::run);
@@ -362,9 +362,9 @@ void DodgeState::handleInput(Hero& hero)
 {
     if (m_elapsedTime.getElapsedTime().asSeconds() >= m_dodgeDuration)
     {
-        hero.m_isAirDodging = false;
-        if (!hero.m_stateManager.isStateStackEmpty())
-            hero.m_stateManager.popState(&hero);
+        hero.getAirDodge(false);
+        if (!hero.getStateManager().isStateStackEmpty())
+            hero.getStateManager().popState(&hero);
         else
         {
             if (isGoingLeft() || isGoingRight())
@@ -397,4 +397,54 @@ void DodgeState::update(Hero& hero, float deltaTime)
 void DodgeState::setTexture(Hero& hero)
 {
     hero.getSprite().setTexture(hero.getTexture(HeroStateNames::stateName::dodge));
+}
+
+// HURT STATE
+void HurtState::handleInput(Hero& hero)
+{
+	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
+	{
+		hero.getIsHurt(false);
+		if (isGoingLeft() || isGoingRight())
+			hero.setState(HeroStateNames::stateName::run);
+		else
+			hero.setState(HeroStateNames::stateName::idle);
+	}
+}
+
+void HurtState::update(Hero& hero, float deltaTime)
+{
+	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
+	{
+		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
+		m_elapsedTime.restart();
+		sf::IntRect currentFrameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
+		hero.getSprite().setTextureRect(currentFrameRect);
+	}
+}
+
+void HurtState::setTexture(Hero& hero)
+{
+	hero.getSprite().setTexture(hero.getTexture(HeroStateNames::stateName::hurt));
+}
+
+// DEATH STATE
+void DeathState::handleInput(Hero& hero)
+{
+}
+
+void DeathState::update(Hero& hero, float deltaTime)
+{
+	if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
+	{
+		m_currentFrame = (m_currentFrame + 1) % m_frameCount;
+		m_elapsedTime.restart();
+		sf::IntRect currentFrameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
+		hero.getSprite().setTextureRect(currentFrameRect);
+	}
+}
+
+void DeathState::setTexture(Hero& hero)
+{
+	hero.getSprite().setTexture(hero.getTexture(HeroStateNames::stateName::death));
 }

@@ -7,17 +7,14 @@ class Game : public SceneBase
 {
 public:
     Game(sf::RenderWindow* window, const float& framerate);
-    ~Game() = default;
+    ~Game() override = default;
 
     // PLAYER
     void setPlayer();
-    void removeProjectiles();
     void checkCollision();
 
     // ENEMIES
-    void setEnemiesCount(int count);
     void spawnEnemy(sf::RenderWindow* window);
-    void removeDeadEnemies();
 
     // GAME MAP
     void setBackground(sf::RenderWindow* window);
@@ -26,12 +23,9 @@ public:
 	sf::FloatRect getPlatformHitbox();
     sf::FloatRect GetWindowCollision();
 
-    void setAudio();
     void processInput(const sf::Event& event) override;
     void update(const float& deltaTime) override;
     void render() override;
-    void displayFPS();
-    void displayScore();
 
     void drawHitboxes();
 

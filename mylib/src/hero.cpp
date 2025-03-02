@@ -4,19 +4,8 @@
 
 Hero::Hero()
 {
-    m_textures[stateName::idle].loadFromFile(PathManager::getResourcePath("hero\\IDLE.png"));
-    m_textures[stateName::run].loadFromFile(PathManager::getResourcePath("hero\\RUN.png"));
-    m_textures[stateName::jump].loadFromFile(PathManager::getResourcePath("hero\\JUMP.png"));
-    m_textures[stateName::dodge].loadFromFile(PathManager::getResourcePath("hero\\DASH.png"));
-    m_textures[stateName::attack].loadFromFile(PathManager::getResourcePath("hero\\ATTACK1.png"));
-	m_textures[stateName::jump_attack].loadFromFile(PathManager::getResourcePath("hero\\AIR_ATTACK.png"));
-	m_textures[stateName::block].loadFromFile(PathManager::getResourcePath("hero\\BLOCK.png"));
-
+    setStateTexture();
     m_sprites.setScale(2.f, 2.f);
-}
-
-Hero::~Hero()
-{
 }
 
 bool Hero::isAlive()
@@ -56,18 +45,32 @@ bool Hero::isOnGround() const
 
 void Hero::takeDamage(int damage)
 {
+	m_health -= damage;
+	if (m_health <= 0)
+	{
+		m_health = 0;
+		m_stateManager.setState(this, stateName::death);
+	}
+	else
+		m_stateManager.setState(this, stateName::hurt);
 }
 
 void Hero::setInvulnerable(float duration)
 {
+
 }
 
 void Hero::updateInvulnerabilityEffect()
 {
+
 }
 
 void Hero::attacking()
 {
+	m_stateManager.setState(this, stateName::attack);
+
+	if (m_isJumping)
+		m_stateManager.setState(this, stateName::jump_attack);
 }
 
 void Hero::setState(stateName newState)
@@ -97,6 +100,11 @@ int Hero::getHp()
     return m_health;
 }
 
+int Hero::getDamage() const
+{
+    return m_attackDmg;
+}
+
 float Hero::getSpeed() const
 {
     return m_speed;
@@ -105,6 +113,26 @@ float Hero::getSpeed() const
 float Hero::getJumpVelocity() const
 {
     return m_jumpVelocity;
+}
+
+void Hero::setHorizontalVelocity(float velocity)
+{
+    m_horizontalVelocity = velocity;
+}
+
+float Hero::getHorizontalVelocity() const
+{
+    return m_horizontalVelocity;
+}
+
+void Hero::setVerticalVelocity(float velocity)
+{
+    m_verticalVelocity = velocity;
+}
+
+float Hero::getVerticalVelocity() const
+{
+    return m_verticalVelocity;
 }
 
 sf::FloatRect Hero::getHitbox() const
@@ -177,6 +205,31 @@ sf::Vector2f Hero::getPlayerCenter()
 	return { getHitbox().left + getHitbox().width / 2.f, getHitbox().top + getHitbox().height / 2.f };
 }
 
+bool Hero::getAirDodge(bool newResult)
+{
+	return m_isAirDodging = newResult;
+}
+
+bool Hero::getIsJumping(bool newResult)
+{
+	return m_isJumping = newResult;
+}
+
+bool Hero::getIsJumping()
+{
+	return m_isJumping;
+}
+
+bool Hero::getIsHurt(bool newResult)
+{
+	return m_isHurt = newResult;
+}
+
+bool Hero::getIsHurt()
+{
+	return m_isHurt;
+}
+
 sf::Texture& Hero::getTexture(const stateName& stateName_)
 {
     if (m_textures.find(stateName_) == m_textures.end())
@@ -193,6 +246,24 @@ sf::Sprite& Hero::getSprite()
 Hero::stateName Hero::getCurrentState() const
 {
     return m_currentStateName;
+}
+
+HeroState& Hero::getStateManager()
+{
+	return m_stateManager;
+}
+
+void Hero::setStateTexture()
+{
+    m_textures[stateName::idle].loadFromFile(PathManager::getResourcePath("hero\\IDLE.png"));
+    m_textures[stateName::run].loadFromFile(PathManager::getResourcePath("hero\\RUN.png"));
+    m_textures[stateName::jump].loadFromFile(PathManager::getResourcePath("hero\\JUMP.png"));
+    m_textures[stateName::dodge].loadFromFile(PathManager::getResourcePath("hero\\DASH.png"));
+    m_textures[stateName::attack].loadFromFile(PathManager::getResourcePath("hero\\ATTACK1.png"));
+    m_textures[stateName::jump_attack].loadFromFile(PathManager::getResourcePath("hero\\AIR_ATTACK.png"));
+    m_textures[stateName::block].loadFromFile(PathManager::getResourcePath("hero\\BLOCK.png"));
+	m_textures[stateName::hurt].loadFromFile(PathManager::getResourcePath("hero\\HURT.png"));
+	m_textures[stateName::death].loadFromFile(PathManager::getResourcePath("hero\\DEATH.png"));
 }
 
 void Hero::move(const sf::Vector2f& offset)
