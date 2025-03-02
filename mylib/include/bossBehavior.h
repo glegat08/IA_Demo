@@ -149,36 +149,36 @@ namespace BT
         }
     };
 
-    class JumpAttack : public BehaviorNodeDecorator<class Boss, IActionNode>
+    class BossJumpAttack : public BehaviorNodeDecorator<class Boss, IActionNode>
     {
     private:
         Game* m_game;
     public:
-        JumpAttack(ICompositeNode* parent, Game* game)
+        BossJumpAttack(ICompositeNode* parent, Game* game)
             : BehaviorNodeDecorator(parent), m_game(game) {}
         Status tick() override
         {
-            getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::JumpAttack);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::JumpAttack));
-            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::JumpAttack);
+            getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::BossJumpAttack);
+            getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::BossJumpAttack));
+            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::BossJumpAttack);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
             return Success;
         }
     };
 
-    class FlameJumpAttack : public BehaviorNodeDecorator<class Boss, IActionNode>
+    class BossJumpAttackFlame : public BehaviorNodeDecorator<class Boss, IActionNode>
     {
     private:
         Game* m_game;
     public:
-        FlameJumpAttack(ICompositeNode* parent, Game* game)
+        BossJumpAttackFlame(ICompositeNode* parent, Game* game)
             : BehaviorNodeDecorator(parent), m_game(game) {}
         Status tick() override
         {
-            getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::JumpAttackFlame);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture2(Boss::BossStatePhaseTwo::JumpAttackFlame));
-            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::JumpAttackFlame);
+            getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::BossJumpAttackFlame);
+            getGameObject()->getSprite().setTexture(getGameObject()->getTexture2(Boss::BossStatePhaseTwo::BossJumpAttackFlame));
+            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::BossJumpAttackFlame);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
             return Success;
@@ -281,7 +281,6 @@ namespace BT
 
         void display() override
         {
-            std::cout << "RandomAttackSelector:" << std::endl;
             for (auto child : m_children)
                 child->display();
         }
@@ -307,7 +306,6 @@ namespace BT
 
         void display() override
         {
-            std::cout << "AttackOrChaseSelector:" << std::endl;
             for (auto child : getChildren())
                 child->display();
         }
@@ -332,7 +330,6 @@ namespace BT
         Status tick() override
         {
             getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Idle);
-            std::cout << "Setting texture for Idle" << std::endl;
             getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::Idle));
             return Success;
         }

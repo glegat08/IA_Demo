@@ -2,7 +2,6 @@
 #define BOSS_H
 
 #include "behaviorTree.h"
-#include "bossState.h"
 #include "gameObject.h"
 #include "game.h"
 
@@ -15,10 +14,10 @@ struct AnimationData
 namespace BossStateNames
 {
     enum class BossStatePhaseOne
-	{
+    {
         Idle,
         Run,
-        JumpAttack,
+        BossJumpAttack,
         Hurt,
         Attack1,
         Attack2,
@@ -27,10 +26,10 @@ namespace BossStateNames
     };
 
     enum class BossStatePhaseTwo
-	{
+    {
         IdleFlame,
         RunFlame,
-        JumpAttackFlame,
+        BossJumpAttackFlame,
         HurtFlame,
         Death,
         AttackFlame1,
@@ -38,77 +37,6 @@ namespace BossStateNames
         AttackFlame3
     };
 }
-
-//class Boss : public gameObject
-//{
-//public:
-//    Boss();
-//    ~Boss();
-//
-//    using BossStatePhaseOne = BossStateNames::BossStatePhaseOne;
-//    using BossStatePhaseTwo = BossStateNames::BossStatePhaseTwo;
-//
-//    // BOOL METHOD
-//    bool isAlive() override;
-//    bool isShooting() override;
-//    bool isAttacking() override;
-//    bool isInvulnerable() override;
-//
-//    void initializeBehaviorTree();
-//    void loadTextures();
-//    void setState(BossStatePhaseOne newState);
-//    void setState2(BossStatePhaseTwo newState);
-//    void switchToPhaseTwo();
-//    void resetAnimation();
-//    void firstBossMove(const sf::Vector2u& windowSize);
-//    void takeDamage(int damage) override;
-//    void setInvulnerable(float duration) override;
-//    void updateInvulnerabilityEffect();
-//    void attacking();
-//    void handleInput();
-//    void update(float deltaTime);
-//    void draw(sf::RenderWindow& window);
-//
-//    int getHp() const;
-//    int getShield() const;
-//
-//    sf::Sprite& getSprite();
-//    sf::FloatRect getHitbox() const;
-//
-//    sf::Texture& getTexture(const BossStatePhaseOne& stateName_);
-//    sf::Texture& getTexture2(const BossStatePhaseTwo& stateName_);
-//
-//    friend class Game;
-//
-//protected:
-//    int m_health = 300;
-//    bool m_isIdle;
-//    bool m_isAttacking;
-//    float m_speed = 200.f;
-//
-//    sf::Sprite m_cBossSprite;
-//
-//    sf::Clock m_animationClock;
-//    int m_currentFrame = 0;
-//
-//    bool m_phaseTwoActive = false;
-//    BossStatePhaseOne m_currentStateName;
-//    BossStatePhaseTwo m_currentStateNameP2;
-//
-//private:
-//
-//    // GAMEPLAY
-//    sf::Clock m_invulnerableClock;
-//    sf::Clock m_blinkClock;
-//    float m_invulnerableDuration;
-//    bool m_isInvulnerable = false;
-//    sf::FloatRect m_hitbox;
-//
-//    sf::Sprite m_sprites;
-//    std::map<BossStatePhaseOne, sf::Texture> m_texturesP1;
-//    std::map<BossStatePhaseTwo, sf::Texture> m_texturesP2;
-//    BossState m_stateManager;
-//};
 
 class Boss : public IGameObject
 {
@@ -124,6 +52,7 @@ public:
     {}
 
     Boss(Game* game);
+    void initializeBehaviorTree();
 
     void update(float deltaTime);
     void findValidTarget();
@@ -152,7 +81,7 @@ public:
     int getAttackDamage(BossStatePhaseOne attackType) const;
     int getAttackDamage(BossStatePhaseTwo attackType) const;
 
-    void draw(sf::RenderWindow& window) const; 
+    void draw(sf::RenderWindow& window) const;
 
     BT::Status tick();
 
@@ -191,7 +120,6 @@ private:
     int jumpAttackFlameDamage = 40;
 
     sf::Sprite m_sprites;
-    /*BossState m_stateManager;*/
     BossStatePhaseOne m_currentStateName;
     BossStatePhaseTwo m_currentStateNameP2;
 
@@ -202,7 +130,7 @@ private:
     {BossStatePhaseOne::Attack1, {7, 0.12f}},
     {BossStatePhaseOne::Attack2, {6, 0.15f}},
     {BossStatePhaseOne::Attack3, {7, 0.1f}},
-    {BossStatePhaseOne::JumpAttack, {12, 0.08f}},
+    {BossStatePhaseOne::BossJumpAttack, {12, 0.08f}},
     {BossStatePhaseOne::Transformation, {17, 0.12f}}
     };
 
@@ -213,12 +141,12 @@ private:
     {BossStatePhaseTwo::AttackFlame1, {7, 0.1f}},
     {BossStatePhaseTwo::AttackFlame2, {6, 0.12f}},
     {BossStatePhaseTwo::AttackFlame3, {7, 0.1f}},
-    {BossStatePhaseTwo::JumpAttackFlame, {12, 0.07f}},
+    {BossStatePhaseTwo::BossJumpAttackFlame, {12, 0.07f}},
     {BossStatePhaseTwo::Death, {10, 0.2f}},
     };
 
     std::map<BossStatePhaseOne, sf::Texture> m_texturesP1;
-	std::map<BossStatePhaseTwo, sf::Texture> m_texturesP2;
+    std::map<BossStatePhaseTwo, sf::Texture> m_texturesP2;
 };
 
 #endif // BOSS_H

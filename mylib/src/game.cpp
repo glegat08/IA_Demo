@@ -10,8 +10,6 @@ Game::Game(sf::RenderWindow* window, const float& framerate)
     setGroundTexture(window);
     setPlayer();
     setBoss();
-    sf::Vector2f pos = m_boss->getSprite().getPosition();
-    std::cout << "Boss position: x=" << pos.x << ", y=" << pos.y << std::endl;
 }
 
 //Game::~Game()
@@ -31,21 +29,12 @@ Hero& Game::getPlayer()
 
 void Game::setBoss()
 {
-    if (m_boss)
-        m_boss->getSprite().setPosition(200, getGroundHitbox().top - m_player.getHitbox().height);
-    else
-        std::cerr << "Error: Boss is not initialized!" << std::endl;
+	m_boss->getSprite().setPosition(100, getGroundHitbox().top - m_player.getHitbox().height);
 }
 
 Boss* Game::getBoss() const
 {
-    if (m_boss) {
-        return m_boss.get();
-    }
-    else {
-        std::cerr << "Error: Boss is null!" << std::endl;
-        return nullptr;
-    }
+    return m_boss.get();
 }
 
 void Game::checkCollision()
@@ -107,11 +96,8 @@ void Game::processInput(const sf::Event& event)
 
 void Game::update(const float& deltaTime)
 {
-    m_player.update(deltaTime);   
-    if (m_boss)
-        m_boss->update(deltaTime);
-    else
-        std::cerr << "Error: Boss instance is null!" << std::endl;
+    m_player.update(deltaTime);
+	m_boss->update(deltaTime);
 
     float currentTime = m_fpsClock.getElapsedTime().asMilliseconds();
     if (currentTime - m_fpsStartTime > 1000)
@@ -136,15 +122,7 @@ void Game::render()
     m_renderWindow->draw(m_backgroundShape);
     m_renderWindow->draw(m_rectangle_shape);
     m_renderWindow->draw(m_player.getSprite());
-    /*m_renderWindow->draw(m_boss->getSprite());*/
-    if (m_boss) {
-        /*std::cout << "Drawing boss..." << std::endl;*/
-        m_renderWindow->draw(m_boss->getSprite());
-    }
-    else {
-        std::cerr << "Error: Boss is null during rendering!" << std::endl;
-    }
-
+    m_renderWindow->draw(m_boss->getSprite());
 
     drawHitboxes();
 }

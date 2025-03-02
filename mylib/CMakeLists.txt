@@ -9,7 +9,6 @@ set(SOURCES
     ${SOURCE_DIR}/boss.cpp
     ${SOURCE_DIR}/sceneManager.cpp
     ${SOURCE_DIR}/sceneBase.cpp
-    ${SOURCE_DIR}/bossState.cpp
     ${SOURCE_DIR}/gameObject.cpp
     ${SOURCE_DIR}/pause.cpp
     ${SOURCE_DIR}/game.cpp
@@ -27,7 +26,6 @@ set(HEADERS
     ${HEADER_DIR}/boss.h
     ${HEADER_DIR}/sceneManager.h
     ${HEADER_DIR}/sceneBase.h
-    ${HEADER_DIR}/bossState.h
     ${HEADER_DIR}/gameObject.h
     ${HEADER_DIR}/game.h
     ${HEADER_DIR}/pause.h
