@@ -28,8 +28,6 @@ void Boss::initializeBehaviorTree()
     new BT::Idle(behavior);
     new BT::Wait(behavior, 1.0f);
     auto* targetSequence = new BT::Sequence(behavior);
-    new BT::CheckTargetInRange(targetSequence, 100.f);
-
     new BT::RunTowardsTarget(targetSequence, true);
 
     new BT::CheckTargetInRange(targetSequence, 50.f);
@@ -161,10 +159,7 @@ void Boss::updateAnimation()
     {
         m_currentFrame = (m_currentFrame + 1) % m_frameCount;
         m_animationClock.restart();
-
-        int frameWidth = 128;
-        int frameHeight = 64;
-        m_sprites.setTextureRect(sf::IntRect(m_currentFrame * frameWidth, 0, frameWidth, frameHeight));
+    	m_sprites.setTextureRect(sf::IntRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight));
     }
 }
 
@@ -433,10 +428,18 @@ void Boss::loadTextures()
         }
     }
 
-    if (m_texturesP1.find(BossStatePhaseOne::Idle) != m_texturesP1.end()) 
+    if (m_texturesP1.find(BossStatePhaseOne::Idle) != m_texturesP1.end())
     {
         m_sprites.setTexture(m_texturesP1[BossStatePhaseOne::Idle]);
         m_sprites.setScale(2.f, 2.f);
+        m_sprites.setTextureRect(sf::IntRect(0, 0, m_frameWidth, m_frameHeight));
+
+        m_currentFrame = 0;
+        m_frameCount = phaseOneAnimations[BossStatePhaseOne::Idle].frameCount;
+        m_frameDuration = phaseOneAnimations[BossStatePhaseOne::Idle].frameDuration;
+        m_animationClock.restart();
+
+        m_currentStateName = BossStatePhaseOne::Idle;
     }
     else
     {

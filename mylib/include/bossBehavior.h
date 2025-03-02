@@ -238,10 +238,15 @@ namespace BT
             if (!boss || (m_isPlayer && !boss->getCurrentTarget()))
                 return Failed;
 
-			boss->getSprite().setTexture(boss->getTexture(Boss::BossStatePhaseOne::Run));
+            boss->getSprite().setTexture(boss->getTexture(Boss::BossStatePhaseOne::Run));
             auto target = boss->getCurrentTarget()->getPlayerPosition();
             sf::Vector2f bossPos = boss->getSprite().getPosition();
             float directionX = target.x - bossPos.x;
+
+            float distance = std::abs(directionX);
+
+            if (distance < 50.0f)
+                return Success;
 
             float moveSpeed = 200.0f;
             float deltaTime = 0.016f;
@@ -249,16 +254,19 @@ namespace BT
             if (directionX > 0)
             {
                 boss->getSprite().move(moveSpeed * deltaTime, 0.0f);
-				boss->getSprite().setScale(2.f, 2.f);
+                sf::Vector2f currentPos = boss->getSprite().getPosition();
+                boss->getSprite().setScale(2.f, 2.f);
                 boss->isFacingLeft(false);
+                boss->getSprite().setPosition(currentPos);
             }
             else if (directionX < 0)
             {
                 boss->getSprite().move(-moveSpeed * deltaTime, 0.0f);
-				boss->getSprite().setScale(-2.f, 2.f);
-				boss->isFacingLeft(true);
+                sf::Vector2f currentPos = boss->getSprite().getPosition();
+                boss->getSprite().setScale(-2.f, 2.f);
+                boss->isFacingLeft(true);
+                boss->getSprite().setPosition(currentPos);
             }
-
             return Running;
         }
     };

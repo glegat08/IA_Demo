@@ -123,6 +123,8 @@ private:
     sf::Clock m_runAnimationClock;
     sf::Clock m_attackDelayClock;
     bool m_isFacingLeft = false;
+    const int m_frameWidth = 128;
+	const int m_frameHeight = 64;
 
     //attack ratio
     int attack1Damage = 10;
