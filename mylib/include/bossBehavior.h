@@ -238,16 +238,28 @@ namespace BT
             if (!boss || (m_isPlayer && !boss->getCurrentTarget()))
                 return Failed;
 
-            auto target = m_isPlayer ? boss->getCurrentTarget()->getPlayerPosition() : boss->getCurrentTarget()->getPlayerPosition();
+			boss->getSprite().setTexture(boss->getTexture(Boss::BossStatePhaseOne::Run));
+            auto target = boss->getCurrentTarget()->getPlayerPosition();
             sf::Vector2f bossPos = boss->getSprite().getPosition();
             float directionX = target.x - bossPos.x;
 
-            if (directionX > 0)
-                boss->getSprite().move(1.0f, 0.0f);
-            else if (directionX < 0)
-                boss->getSprite().move(-1.0f, 0.0f);
+            float moveSpeed = 200.0f;
+            float deltaTime = 0.016f;
 
-            return Success;
+            if (directionX > 0)
+            {
+                boss->getSprite().move(moveSpeed * deltaTime, 0.0f);
+				boss->getSprite().setScale(2.f, 2.f);
+                boss->isFacingLeft(false);
+            }
+            else if (directionX < 0)
+            {
+                boss->getSprite().move(-moveSpeed * deltaTime, 0.0f);
+				boss->getSprite().setScale(-2.f, 2.f);
+				boss->isFacingLeft(true);
+            }
+
+            return Running;
         }
     };
 

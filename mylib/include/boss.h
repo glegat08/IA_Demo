@@ -102,6 +102,8 @@ public:
     sf::Texture& getTexture2(const BossStatePhaseTwo& stateName_);
 
     bool m_phaseTwoActive;
+    bool isFacingLeft(bool newBool);
+    bool isFacingLeft();
 
 private:
     Game* m_game;
@@ -120,6 +122,7 @@ private:
     sf::Clock m_animationClock;
     sf::Clock m_runAnimationClock;
     sf::Clock m_attackDelayClock;
+    bool m_isFacingLeft = false;
 
     //attack ratio
     int attack1Damage = 10;
