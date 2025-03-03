@@ -284,46 +284,69 @@ sf::FloatRect Boss::getHitbox() const
     sf::FloatRect spriteRect = m_sprites.getGlobalBounds();
     float width, height, offsetX, y;
 
-    width = spriteRect.width * 0.2f;
-    height = spriteRect.height * 0.8f;
-
-    offsetX = spriteRect.width * 0.32f;
-    y = spriteRect.top + (spriteRect.height - height) * 0.2f;
-
     switch (m_currentStateName)
     {
-    case BossStatePhaseOne::Run:
+    case BossStatePhaseOne::Idle:
         width = spriteRect.width * 0.2f;
+        height = spriteRect.height * 0.8f;
         if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.32f;
+			offsetX = spriteRect.width * 0.5f;
+		else
+			offsetX = spriteRect.width * 0.35f;
+
+        y = spriteRect.top + (spriteRect.height - height) * 0.2f;
+
+		break;
+	case BossStatePhaseOne::Run:
+        width = spriteRect.width * 0.2f;
+        height = spriteRect.height * 0.8f;
+        if (m_isFacingLeft)
+            offsetX = spriteRect.width * 0.5f;
         else
-            offsetX = spriteRect.width * 0.2f;
+            offsetX = spriteRect.width * 0.1f;
+
+        y = spriteRect.top + (spriteRect.height - height) * 0.2f;
+
     break;
     	case BossStatePhaseOne::Attack1:
         width = spriteRect.width * 0.5f;
+        height = spriteRect.height * 0.8f;
+
         if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.32f - width;
+            offsetX = spriteRect.width * 0.32f;
         else
             offsetX = spriteRect.width * 0.32f;
+
+        y = spriteRect.top + (spriteRect.height - height) * 0.2f;
+
         break;
     case BossStatePhaseOne::Attack2:
         width = spriteRect.width * 0.5f;
+        height = spriteRect.height * 0.8f;
         if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.32f - width;
+            offsetX = spriteRect.width * 0.32f;
         else
             offsetX = spriteRect.width * 0.32f;
+
+        y = spriteRect.top + (spriteRect.height - height) * 0.2f;
+
         break;
     case BossStatePhaseOne::Attack3:
         width = spriteRect.width * 0.5f;
+        height = spriteRect.height * 0.8f;
         if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.32f - width;
+            offsetX = spriteRect.width * 0.32f;
         else
             offsetX = spriteRect.width * 0.32f;
+
+        y = spriteRect.top + (spriteRect.height - height) * 0.2f;
+
         break;
     case BossStatePhaseOne::BossJumpAttack:
         width = spriteRect.width * 0.55f;
+        height = spriteRect.height * 0.8f;
         if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.32f - width;
+            offsetX = spriteRect.width * 0.32f;
         else
             offsetX = spriteRect.width * 0.32f;
 
@@ -331,10 +354,12 @@ sf::FloatRect Boss::getHitbox() const
         break;
     case BossStatePhaseOne::Hurt:
         width = spriteRect.width * 0.28f;
+        height = spriteRect.height * 0.8f;
         offsetX = spriteRect.width * 0.36f;
         break;
     case BossStatePhaseOne::Transformation:
         width = spriteRect.width * 0.4f;
+        height = spriteRect.height * 0.8f;
         offsetX = spriteRect.width * 0.3f;
         break;
     }
