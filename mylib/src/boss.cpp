@@ -29,13 +29,18 @@ void Boss::initializeBehaviorTree()
     new BT::Idle(behavior);
     new BT::Wait(behavior, 1.0f);
 
-    auto* targetSequence = new BT::Sequence(behavior);
-    new BT::CheckTargetInRange(targetSequence, 100.f);
-    new BT::RunTowardsTarget(targetSequence, true);
+    auto* targetSelector = new BT::Selector(behavior);
 
-    auto* attackSequence = new BT::Sequence(targetSequence);
+    auto* chaseSequence = new BT::Sequence(targetSelector);
+    new BT::CheckTargetInRange(chaseSequence, 100.f);
+    new BT::RunTowardsTarget(chaseSequence, true);
+    /*if (targetInRange)*/
+        
+
+    auto* attackSequence = new BT::Sequence(targetSelector);
     new BT::CheckTargetInRange(attackSequence, 50.f);
     new BT::BossAttack1(attackSequence, m_game, 50.f);
+    /*new BT::WaitForAnimation(attackSequence, m_boss);*/
     new BT::BossAttack2(attackSequence, m_game, 50.f);
     new BT::BossAttack3(attackSequence, m_game, 50.f);
 
@@ -99,10 +104,12 @@ void Boss::findValidTarget()
     if (m_game)
     {
         Hero& hero = m_game->getPlayer();
-        if (hero.isAlive())
+        if (hero.isAlive()) {
             m_currentTarget = &hero;
-        else
+        }
+        else {
             m_currentTarget = nullptr;
+        }
     }
     else
     {
@@ -156,6 +163,11 @@ void Boss::updateAnimation()
         int frameHeight = 64;
         m_sprites.setTextureRect(sf::IntRect(m_currentFrame * frameWidth, 0, frameWidth, frameHeight));
     }
+}
+
+bool Boss::isAnimationComplete() const
+{
+    return m_animationClock.getElapsedTime().asSeconds() >= m_frameCount * m_frameDuration;
 }
 
 int Boss::getHp()

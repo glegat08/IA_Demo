@@ -358,6 +358,15 @@ namespace BT
         }
     };
 
+    struct SelectorSuccessStrategy : public IStrategy<Success>
+    {
+        virtual Status execute(ControlNode* node)
+        {
+            node->reset();
+            return Success;
+        }
+    };
+
     class DoNTime : public ControlNode
     {
     public:
@@ -389,6 +398,15 @@ namespace BT
     public:
         Retry(ICompositeNode* parent) :
             ControlNode(parent, new RetryStrategy, new RunningStrategy, new SuccessStrategy)
+        {
+        }
+    };
+
+    class Selector : public ControlNode
+    {
+    public:
+        Selector(ICompositeNode* parent)
+            : ControlNode(parent, new FailAsSuccessStrategy, new RunningStrategy, new SelectorSuccessStrategy)
         {
         }
     };

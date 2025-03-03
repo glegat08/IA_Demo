@@ -82,6 +82,7 @@ public:
     Hero* getCurrentTarget() const;
     void retreatFromPlayer(float deltaTime);
     bool isCloseToTarget() const;
+    bool isAnimationComplete() const;
 
     //attack
     int getAttackDamage(BossStatePhaseOne attackType) const;

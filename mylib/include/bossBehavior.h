@@ -369,6 +369,7 @@ namespace BT
         }
     };
 
+
     class AttackOrChaseSelector : public ICompositeNode
     {
     public:
@@ -448,8 +449,10 @@ namespace BT
             int damage = player.getDamage();
 
             if (damage > 0)
+            {
                 boss->takeDamage(damage);
                 return true;
+            }
         }
 
         Status tick() override
@@ -495,7 +498,8 @@ namespace BT
         }
     };
 
-    class Wait : public IActionNode {
+    class Wait : public IActionNode
+	{
     private:
         sf::Time m_duration;
         sf::Clock m_timer;
@@ -522,4 +526,21 @@ namespace BT
             return Running;
         }
     };
+
+    class WaitForAnimation : public IActionNode
+	{
+    public:
+        WaitForAnimation(ICompositeNode* parent, Boss* boss) : IActionNode(parent), m_boss(boss) {}
+
+        Status tick() override
+    	{
+            if (m_boss->isAnimationComplete())
+                return Success;
+            return Running;
+        }
+
+    private:
+        Boss* m_boss;
+    };
+
 }
