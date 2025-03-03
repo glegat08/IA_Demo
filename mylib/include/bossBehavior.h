@@ -168,12 +168,17 @@ namespace BT
             : BehaviorNodeDecorator(parent), m_game(game) {}
         Status tick() override
         {
-            getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::BossJumpAttack);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::BossJumpAttack));
-            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::BossJumpAttack);
-            if (m_game)
-                m_game->getPlayer().takeDamage(damage);
-            return Success;
+            if (getGameObject()->getCurrentTarget()->isJumping())
+            {
+                getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::BossJumpAttack);
+                getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::BossJumpAttack));
+                int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::BossJumpAttack);
+                if (m_game)
+                    m_game->getPlayer().takeDamage(damage);
+                return Success;
+            }
+
+            return Running;
         }
     };
 
@@ -234,40 +239,33 @@ namespace BT
 
         Status tick() override
         {
-            auto boss = dynamic_cast<class Boss*>(getGameObject());
-            if (!boss || (m_isPlayer && !boss->getCurrentTarget()))
-                return Failed;
-
-            boss->getSprite().setTexture(boss->getTexture(Boss::BossStatePhaseOne::Run));
-            auto target = boss->getCurrentTarget()->getPlayerPosition();
-            sf::Vector2f bossPos = boss->getSprite().getPosition();
-            float directionX = target.x - bossPos.x;
-
-            float distance = std::abs(directionX);
-
-            if (distance < 50.0f)
-                return Success;
+            getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Run);
+            auto target = getGameObject()->getCurrentTarget()->getPlayerPosition();
+            auto directionX = target - getGameObject()->getSprite().getPosition();
 
             float moveSpeed = 200.0f;
             float deltaTime = 0.016f;
 
-            if (directionX > 0)
+            if (getGameObject()->getSprite().getPosition().x < getGameObject()->getCurrentTarget()->getPlayerPosition().x)
             {
-                boss->getSprite().move(moveSpeed * deltaTime, 0.0f);
-                sf::Vector2f currentPos = boss->getSprite().getPosition();
-                boss->getSprite().setScale(2.f, 2.f);
-                boss->isFacingLeft(false);
-                boss->getSprite().setPosition(currentPos);
+                getGameObject()->getSprite().move(moveSpeed * deltaTime, 0.0f);
+                sf::Vector2f currentPos = getGameObject()->getSprite().getPosition();
+                getGameObject()->getSprite().setScale(2.f, 2.f);
+                getGameObject()->isFacingLeft(false);
+                getGameObject()->getSprite().setPosition(currentPos);
             }
-            else if (directionX < 0)
+            else if (getGameObject()->getSprite().getPosition().x > getGameObject()->getCurrentTarget()->getPlayerPosition().x)
             {
-                boss->getSprite().move(-moveSpeed * deltaTime, 0.0f);
-                sf::Vector2f currentPos = boss->getSprite().getPosition();
-                boss->getSprite().setScale(-2.f, 2.f);
-                boss->isFacingLeft(true);
-                boss->getSprite().setPosition(currentPos);
+                getGameObject()->getSprite().move(-moveSpeed * deltaTime, 0.0f);
+                sf::Vector2f currentPos = getGameObject()->getSprite().getPosition();
+                getGameObject()->getSprite().setScale(-2.f, 2.f);
+                getGameObject()->isFacingLeft(true);
+                getGameObject()->getSprite().setPosition(currentPos);
             }
             return Running;
+
+            if (getGameObject()->getHitbox().intersects(getGameObject()->getCurrentTarget()->getHitbox()))
+                return Success;
         }
     };
 

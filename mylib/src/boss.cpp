@@ -25,16 +25,16 @@ void Boss::initializeBehaviorTree()
     if (!behavior)
         throw std::runtime_error("memory allocation error");
 
-    new BT::Idle(behavior);
-    new BT::Wait(behavior, 1.0f);
-    auto* targetSequence = new BT::Sequence(behavior);
-    new BT::RunTowardsTarget(targetSequence, true);
-
-    new BT::CheckTargetInRange(targetSequence, 50.f);
-    new BT::BossAttack1(targetSequence, m_game);
-
-    new BT::BossAttack2(targetSequence, m_game);
-    new BT::BossAttack3(targetSequence, m_game);
+    auto* Sequence1 = new BT::Sequence(behavior);
+    new BT::Idle(Sequence1);
+    new BT::Wait(Sequence1, 1.0f);
+    new BT::RunTowardsTarget(Sequence1, true);
+    new BT::BossAttack1(Sequence1, m_game);
+    new BT::Wait(Sequence1, 0.5f);
+    new BT::BossAttack2(Sequence1, m_game);
+    new BT::Wait(Sequence1, 0.5f);
+    new BT::BossAttack3(Sequence1, m_game);
+    new BT::Wait(Sequence1, 1.0f);
 
     //auto* ifHealthLow = new BT::IfHealthLow(behavior);
     //auto* transformSequence = new BT::Sequence(ifHealthLow);
@@ -296,48 +296,48 @@ sf::FloatRect Boss::getHitbox() const
 
         y = spriteRect.top + (spriteRect.height - height) * 0.2f;
 
-		break;
-	case BossStatePhaseOne::Run:
-        width = spriteRect.width * 0.2f;
+	    break;
+    case BossStatePhaseOne::Run:
+        width = spriteRect.width * 0.3;
         height = spriteRect.height * 0.8f;
         if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.5f;
+            offsetX = spriteRect.width * 0.7f;
         else
-            offsetX = spriteRect.width * 0.1f;
+            offsetX = spriteRect.width * 0.02f;
 
         y = spriteRect.top + (spriteRect.height - height) * 0.2f;
 
-    break;
-    	case BossStatePhaseOne::Attack1:
-        width = spriteRect.width * 0.5f;
+         break;
+    case BossStatePhaseOne::Attack1:
+        width = spriteRect.width * 0.4f;
         height = spriteRect.height * 0.8f;
 
         if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.32f;
+            offsetX = spriteRect.width * 0.18f;
         else
-            offsetX = spriteRect.width * 0.32f;
+            offsetX = spriteRect.width * 0.42f;
 
         y = spriteRect.top + (spriteRect.height - height) * 0.2f;
 
         break;
     case BossStatePhaseOne::Attack2:
-        width = spriteRect.width * 0.5f;
+        width = spriteRect.width * 0.4f;
         height = spriteRect.height * 0.8f;
         if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.32f;
+            offsetX = spriteRect.width * 0.18f;
         else
-            offsetX = spriteRect.width * 0.32f;
+            offsetX = spriteRect.width * 0.42f;
 
         y = spriteRect.top + (spriteRect.height - height) * 0.2f;
 
         break;
     case BossStatePhaseOne::Attack3:
-        width = spriteRect.width * 0.5f;
+        width = spriteRect.width * 0.4f;
         height = spriteRect.height * 0.8f;
         if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.32f;
+            offsetX = spriteRect.width * 0.18f;
         else
-            offsetX = spriteRect.width * 0.32f;
+            offsetX = spriteRect.width * 0.42f;
 
         y = spriteRect.top + (spriteRect.height - height) * 0.2f;
 
