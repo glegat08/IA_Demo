@@ -239,22 +239,19 @@ namespace BT
 
             float moveSpeed = 200.0f;
             float deltaTime = 0.016f;
+            float offset = 100;
 
-            if (currentPos.x < target.x)
+            if (currentPos.x < target.x + offset)
             {
                 getGameObject()->isFacingLeft(false);
                 getGameObject()->getSprite().move(moveSpeed * deltaTime, 0.0f);
                 getGameObject()->getSprite().setScale(2.f, 2.f);
-                sf::Vector2f newPos = getGameObject()->getSprite().getPosition();
-                getGameObject()->getSprite().setPosition(newPos);
             }
-            else if (currentPos.x > target.x)
+            else if (currentPos.x > target.x + offset)
             {
                 getGameObject()->isFacingLeft(true);
                 getGameObject()->getSprite().move(-moveSpeed * deltaTime, 0.0f);
                 getGameObject()->getSprite().setScale(-2.f, 2.f);
-                sf::Vector2f newPos = getGameObject()->getSprite().getPosition();
-                getGameObject()->getSprite().setPosition(newPos);
             }
             return Running;
         }
