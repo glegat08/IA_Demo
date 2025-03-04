@@ -317,9 +317,9 @@ sf::FloatRect Boss::getHitbox() const
         height = spriteRect.height * 0.8f;
 
         if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.18f;
+            offsetX = spriteRect.width * 0.45f;
         else
-            offsetX = spriteRect.width * 0.42f;
+            offsetX = spriteRect.width * 0.16f;
 
         y = spriteRect.top + (spriteRect.height - height) * 0.2f;
 
