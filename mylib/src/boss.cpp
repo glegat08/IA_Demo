@@ -22,36 +22,18 @@ Boss::Boss(Game* game)
 void Boss::initializeBehaviorTree()
 {
     auto* behavior = new BT::Sequence(&m_rootNode);
-    if (!behavior)
-        throw std::runtime_error("memory allocation error");
 
-    auto* Sequence1 = new BT::Sequence(behavior);
-    new BT::Idle(Sequence1);
-    new BT::Wait(Sequence1, 1.0f);
-    new BT::RunTowardsTarget(Sequence1, true);
-    new BT::BossAttack1(Sequence1, m_game);
-    new BT::Wait(Sequence1, 0.5f);
-    new BT::BossAttack2(Sequence1, m_game);
-    new BT::Wait(Sequence1, 0.5f);
-    new BT::BossAttack3(Sequence1, m_game);
-    new BT::Wait(Sequence1, 1.0f);
+    auto* inAttackRange = new BT::CheckTargetInRange(behavior, 150.f);
 
-    //auto* ifHealthLow = new BT::IfHealthLow(behavior);
-    //auto* transformSequence = new BT::Sequence(ifHealthLow);
-    //new BT::TransformToPhaseTwo(transformSequence);
+    auto* attackSequence = new BT::Sequence(inAttackRange);
+    new BT::BossAttack1(attackSequence, m_game);
+    new BT::Wait(attackSequence, 0.5f);
+    new BT::BossAttack2(attackSequence, m_game);
+    new BT::Wait(attackSequence, 0.5f);
+    new BT::BossAttack3(attackSequence, m_game);
+    new BT::Wait(attackSequence, 1.0f);
 
-    //auto* ifPhaseTwo = new BT::IfPhaseTwo(behavior);
-    //auto* phaseTwoSequence = new BT::Sequence(ifPhaseTwo);
-    //new BT::BossAttackFlame1(phaseTwoSequence, m_game);
-    //new BT::BossAttackFlame2(phaseTwoSequence, m_game);
-    //new BT::BossAttackFlame3(phaseTwoSequence, m_game);
-    //new BT::BossJumpAttackFlame(phaseTwoSequence, m_game);
-    //new BT::RunFlameTowardsPlayer(phaseTwoSequence);
-    //new BT::IdleFlame(phaseTwoSequence);
-
-    //new BT::Hurt(behavior);
-    //new BT::HurtFlame(behavior);
-    //new BT::Death(behavior);
+    new BT::RunTowardsTarget(behavior, true);
 }
 
 void Boss::update(float deltaTime)

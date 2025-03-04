@@ -230,6 +230,9 @@ namespace BT
 
         Status tick() override
         {
+            if (!getGameObject()->getCurrentTarget())
+                return Failed;
+
             if (getGameObject()->getHitbox().intersects(getGameObject()->getCurrentTarget()->getHitbox()))
                 return Success;
 
@@ -238,22 +241,30 @@ namespace BT
             auto currentPos = getGameObject()->getSprite().getPosition();
 
             float moveSpeed = 200.0f;
-            float deltaTime = 0.016f;
-            float offset = 100;
+            sf::Vector2f direction = target - currentPos;
+            float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+            float minSafeDistance = 80.0f;
 
-            if (currentPos.x < target.x + offset)
+            if (distance > minSafeDistance)
             {
-                getGameObject()->isFacingLeft(false);
-                getGameObject()->getSprite().move(moveSpeed * deltaTime, 0.0f);
-                getGameObject()->getSprite().setScale(2.f, 2.f);
-            }
-            else if (currentPos.x > target.x + offset)
-            {
-                getGameObject()->isFacingLeft(true);
-                getGameObject()->getSprite().move(-moveSpeed * deltaTime, 0.0f);
-                getGameObject()->getSprite().setScale(-2.f, 2.f);
+                direction /= distance;
+                sf::Vector2f movement = direction * moveSpeed * 0.015f;
+
+                if (direction.x > 0)
+                {
+                    getGameObject()->isFacingLeft(false);
+                    getGameObject()->getSprite().setScale(2.f, 2.f);
+                }
+                else
+                {
+                    getGameObject()->isFacingLeft(true);
+                    getGameObject()->getSprite().setScale(-2.f, 2.f);
+                }
+
+                getGameObject()->getSprite().move(movement);
             }
             return Running;
+
         }
     };
 

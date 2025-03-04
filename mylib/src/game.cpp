@@ -145,16 +145,6 @@ void Game::update(const float& deltaTime)
 {
     m_player.update(deltaTime);
     m_boss->update(deltaTime);
-
-    float currentTime = m_fpsClock.getElapsedTime().asMilliseconds();
-    if (currentTime - m_fpsStartTime > 1000)
-    {
-        m_fpsText.setString("FPS: " + std::to_string(m_fpsCounter));
-        m_fpsStartTime = currentTime;
-        m_fpsCounter = 0;
-    }
-    m_fpsCounter++;
-
     checkCollision();
 
     if (m_isGameOver)
