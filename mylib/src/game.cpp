@@ -14,7 +14,7 @@ Game::Game(sf::RenderWindow* window, const float& framerate)
 
 void Game::setPlayer()
 {
-    m_player.getSprite().setPosition(100, 100);
+    m_player.getSprite().setPosition(100, 500);
 
     m_player.setState(HeroStateNames::stateName::jump);
 

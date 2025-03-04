@@ -35,7 +35,6 @@ namespace BT
         Status tick() override
         {
             getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Transformation);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::Transformation));
             getGameObject()->switchToPhaseTwo();
             return Success;
         }
@@ -52,7 +51,6 @@ namespace BT
         Status tick() override
         {
             getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack1);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::Attack1));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack1);
 
             if (m_game)
@@ -79,7 +77,6 @@ namespace BT
         Status tick() override
         {
             getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::AttackFlame1);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture2(Boss::BossStatePhaseTwo::AttackFlame1));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame1);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
@@ -97,7 +94,6 @@ namespace BT
         Status tick() override
         {
             getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack2);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::Attack2));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack2);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
@@ -115,7 +111,6 @@ namespace BT
         Status tick() override
         {
             getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::AttackFlame2);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture2(Boss::BossStatePhaseTwo::AttackFlame2));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame2);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
@@ -133,7 +128,6 @@ namespace BT
         Status tick() override
         {
             getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack3);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::Attack3));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack3);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
@@ -151,7 +145,6 @@ namespace BT
         Status tick() override
         {
             getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::AttackFlame3);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture2(Boss::BossStatePhaseTwo::AttackFlame3));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame3);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
@@ -171,7 +164,6 @@ namespace BT
             if (getGameObject()->getCurrentTarget()->isJumping())
             {
                 getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::BossJumpAttack);
-                getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::BossJumpAttack));
                 int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::BossJumpAttack);
                 if (m_game)
                     m_game->getPlayer().takeDamage(damage);
@@ -192,7 +184,6 @@ namespace BT
         Status tick() override
         {
             getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::BossJumpAttackFlame);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture2(Boss::BossStatePhaseTwo::BossJumpAttackFlame));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::BossJumpAttackFlame);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
@@ -239,33 +230,33 @@ namespace BT
 
         Status tick() override
         {
+            if (getGameObject()->getHitbox().intersects(getGameObject()->getCurrentTarget()->getHitbox()))
+                return Success;
+
             getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Run);
             auto target = getGameObject()->getCurrentTarget()->getPlayerPosition();
-            auto directionX = target - getGameObject()->getSprite().getPosition();
+            auto currentPos = getGameObject()->getSprite().getPosition();
 
             float moveSpeed = 200.0f;
             float deltaTime = 0.016f;
 
-            if (getGameObject()->getSprite().getPosition().x < getGameObject()->getCurrentTarget()->getPlayerPosition().x)
+            if (currentPos.x < target.x)
             {
-                getGameObject()->getSprite().move(moveSpeed * deltaTime, 0.0f);
-                sf::Vector2f currentPos = getGameObject()->getSprite().getPosition();
-                getGameObject()->getSprite().setScale(2.f, 2.f);
                 getGameObject()->isFacingLeft(false);
-                getGameObject()->getSprite().setPosition(currentPos);
+                getGameObject()->getSprite().move(moveSpeed * deltaTime, 0.0f);
+                getGameObject()->getSprite().setScale(2.f, 2.f);
+                sf::Vector2f newPos = getGameObject()->getSprite().getPosition();
+                getGameObject()->getSprite().setPosition(newPos);
             }
-            else if (getGameObject()->getSprite().getPosition().x > getGameObject()->getCurrentTarget()->getPlayerPosition().x)
+            else if (currentPos.x > target.x)
             {
-                getGameObject()->getSprite().move(-moveSpeed * deltaTime, 0.0f);
-                sf::Vector2f currentPos = getGameObject()->getSprite().getPosition();
-                getGameObject()->getSprite().setScale(-2.f, 2.f);
                 getGameObject()->isFacingLeft(true);
-                getGameObject()->getSprite().setPosition(currentPos);
+                getGameObject()->getSprite().move(-moveSpeed * deltaTime, 0.0f);
+                getGameObject()->getSprite().setScale(-2.f, 2.f);
+                sf::Vector2f newPos = getGameObject()->getSprite().getPosition();
+                getGameObject()->getSprite().setPosition(newPos);
             }
             return Running;
-
-            if (getGameObject()->getHitbox().intersects(getGameObject()->getCurrentTarget()->getHitbox()))
-                return Success;
         }
     };
 
