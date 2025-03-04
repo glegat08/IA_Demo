@@ -80,7 +80,7 @@ public:
 
 protected:
 	int m_health = 100;
-	int m_attackDmg = 10;
+	int m_attackDmg = 51;
 
 	bool m_isIdle;
 	bool m_isAttacking;

@@ -83,6 +83,9 @@ public:
     void setHp(int health);
     int getHp() const;
     sf::FloatRect getHitbox() const;
+    sf::FloatRect getHitboxPhaseOne(const sf::FloatRect& spriteRect) const;
+    sf::FloatRect getHitboxPhaseTwo(const sf::FloatRect& spriteRect) const;
+    bool isInPhaseOne() const;
     Hero* getCurrentTarget() const;
     void moveTowardsPlayer(float deltaTime);
     void retreatFromPlayer(float deltaTime);
