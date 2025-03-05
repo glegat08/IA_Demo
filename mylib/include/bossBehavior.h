@@ -50,23 +50,32 @@ namespace BT
 
         Status tick() override
         {
-            if (m_game)
+            if (!m_game) return Failed;
+
+            Hero& player = m_game->getPlayer();
+            Boss* boss = getGameObject();
+
+            if (player.getHp() <= 0)
             {
-                Hero& player = m_game->getPlayer();
-                if (player.getHp() <= 0)
-                {
-                    getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Idle);
-                    std::cout << "Hero is dead!" << std::endl;
-                    return Failed;
-                }
+                boss->setStatePhaseOne(Boss::BossStatePhaseOne::Idle);
+                std::cout << "Hero is dead!" << std::endl;
+                return Failed;
             }
-            getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack1);
-            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack1);
-            if (m_game)
-                m_game->getPlayer().takeDamage(damage);
+
+            boss->setStatePhaseOne(Boss::BossStatePhaseOne::Attack1);
+
+            sf::FloatRect bossAttackHitbox = boss->getHitbox();
+            sf::FloatRect heroHitbox = player.getHitbox();
+
+            if (bossAttackHitbox.intersects(heroHitbox))
+            {
+                int damage = boss->getAttackDamage(Boss::BossStatePhaseOne::Attack1);
+                player.takeDamage(damage);
+            }
 
             return Success;
         }
+
     };
 
 
@@ -77,22 +86,31 @@ namespace BT
     public:
         BossAttackFlame1(ICompositeNode* parent, Game* game)
             : BehaviorNodeDecorator(parent), m_game(game) {}
+
         Status tick() override
         {
-            if (m_game)
+            if (!m_game) return Failed;
+
+            Hero& player = m_game->getPlayer();
+            Boss* boss = getGameObject();
+
+            if (player.getHp() <= 0)
             {
-                Hero& player = m_game->getPlayer();
-                if (player.getHp() <= 0)
-                {
-                    getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::IdleFlame);
-                    std::cout << "Hero is dead!" << std::endl;
-                    return Failed;
-                }
+                boss->setStatePhaseTwo(Boss::BossStatePhaseTwo::IdleFlame);
+                std::cout << "Hero is dead!" << std::endl;
+                return Failed;
             }
-            getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::AttackFlame1);
-            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame1);
-            if (m_game)
-                m_game->getPlayer().takeDamage(damage);
+
+            boss->setStatePhaseTwo(Boss::BossStatePhaseTwo::AttackFlame1);
+
+            sf::FloatRect bossAttackHitbox = boss->getHitbox();
+            sf::FloatRect heroHitbox = player.getHitbox();
+
+            if (bossAttackHitbox.intersects(heroHitbox))
+            {
+                int damage = boss->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame1);
+                player.takeDamage(damage);
+            }
 
             return Success;
         }
@@ -108,20 +126,28 @@ namespace BT
 
         Status tick() override
         {
-            if (m_game)
+            if (!m_game) return Failed;
+
+            Hero& player = m_game->getPlayer();
+            Boss* boss = getGameObject();
+
+            if (player.getHp() <= 0)
             {
-                Hero& player = m_game->getPlayer();
-                if (player.getHp() <= 0)
-                {
-                    getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Idle);
-                    std::cout << "Hero is dead!" << std::endl;
-                    return Failed;
-                }
+                boss->setStatePhaseOne(Boss::BossStatePhaseOne::Idle);
+                std::cout << "Hero is dead!" << std::endl;
+                return Failed;
             }
-            getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack2);
-            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack2);
-            if (m_game)
-                m_game->getPlayer().takeDamage(damage);
+
+            boss->setStatePhaseOne(Boss::BossStatePhaseOne::Attack2);
+
+            sf::FloatRect bossAttackHitbox = boss->getHitbox();
+            sf::FloatRect heroHitbox = player.getHitbox();
+
+            if (bossAttackHitbox.intersects(heroHitbox))
+            {
+                int damage = boss->getAttackDamage(Boss::BossStatePhaseOne::Attack2);
+                player.takeDamage(damage);
+            }
 
             return Success;
         }
@@ -136,22 +162,30 @@ namespace BT
             : BehaviorNodeDecorator(parent), m_game(game) {}
         Status tick() override
         {
-            if (m_game)
-            {
-                Hero& player = m_game->getPlayer();
-                if (player.getHp() <= 0)
-                {
-                    getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::IdleFlame);
-                    std::cout << "Hero is dead!" << std::endl;
-                    return Failed;
-                }
-            }
-            getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::AttackFlame2);
-            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame2);
-            if (m_game)
-                m_game->getPlayer().takeDamage(damage);
+            if (!m_game) return Failed;
 
-            return Running;
+            Hero& player = m_game->getPlayer();
+            Boss* boss = getGameObject();
+
+            if (player.getHp() <= 0)
+            {
+                boss->setStatePhaseTwo(Boss::BossStatePhaseTwo::IdleFlame);
+                std::cout << "Hero is dead!" << std::endl;
+                return Failed;
+            }
+
+            boss->setStatePhaseTwo(Boss::BossStatePhaseTwo::AttackFlame2);
+
+            sf::FloatRect bossAttackHitbox = boss->getHitbox();
+            sf::FloatRect heroHitbox = player.getHitbox();
+
+            if (bossAttackHitbox.intersects(heroHitbox))
+            {
+                int damage = boss->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame2);
+                player.takeDamage(damage);
+            }
+
+            return Success;
         }
     };
 
@@ -165,20 +199,28 @@ namespace BT
 
         Status tick() override
         {
-            if (m_game)
+            if (!m_game) return Failed;
+
+            Hero& player = m_game->getPlayer();
+            Boss* boss = getGameObject();
+
+            if (player.getHp() <= 0)
             {
-                Hero& player = m_game->getPlayer();
-                if (player.getHp() <= 0)
-                {
-                    getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Idle);
-                    std::cout << "Hero is dead!" << std::endl;
-                    return Failed;
-                }
+                boss->setStatePhaseOne(Boss::BossStatePhaseOne::Idle);
+                std::cout << "Hero is dead!" << std::endl;
+                return Failed;
             }
-            getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack3);
-            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack3);
-            if (m_game)
-                m_game->getPlayer().takeDamage(damage);
+
+            boss->setStatePhaseOne(Boss::BossStatePhaseOne::Attack3);
+
+            sf::FloatRect bossAttackHitbox = boss->getHitbox();
+            sf::FloatRect heroHitbox = player.getHitbox();
+
+            if (bossAttackHitbox.intersects(heroHitbox))
+            {
+                int damage = boss->getAttackDamage(Boss::BossStatePhaseOne::Attack3);
+                player.takeDamage(damage);
+            }
 
             return Success;
         }
@@ -193,20 +235,29 @@ namespace BT
             : BehaviorNodeDecorator(parent), m_game(game) {}
         Status tick() override
         {
-            if (m_game)
+            if (!m_game) return Failed;
+
+            Hero& player = m_game->getPlayer();
+            Boss* boss = getGameObject();
+
+            if (player.getHp() <= 0)
             {
-                Hero& player = m_game->getPlayer();
-                if (player.getHp() <= 0)
-                {
-                    getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::IdleFlame);
-                    std::cout << "Hero is dead!" << std::endl;
-                    return Failed;
-                }
+                boss->setStatePhaseTwo(Boss::BossStatePhaseTwo::IdleFlame);
+                std::cout << "Hero is dead!" << std::endl;
+                return Failed;
             }
-            getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::AttackFlame3);
-            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame3);
-            if (m_game)
-                m_game->getPlayer().takeDamage(damage);
+
+            boss->setStatePhaseTwo(Boss::BossStatePhaseTwo::AttackFlame3);
+
+            sf::FloatRect bossAttackHitbox = boss->getHitbox();
+            sf::FloatRect heroHitbox = player.getHitbox();
+
+            if (bossAttackHitbox.intersects(heroHitbox))
+            {
+                int damage = boss->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame3);
+                player.takeDamage(damage);
+            }
+
             return Success;
         }
     };
@@ -220,26 +271,30 @@ namespace BT
             : BehaviorNodeDecorator(parent), m_game(game) {}
         Status tick() override
         {
-            if (m_game)
+            if (!m_game) return Failed;
+
+            Hero& player = m_game->getPlayer();
+            Boss* boss = getGameObject();
+
+            if (player.getHp() <= 0)
             {
-                Hero& player = m_game->getPlayer();
-                if (player.getHp() <= 0)
-                {
-                    getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Idle);
-                    std::cout << "Hero is dead!" << std::endl;
-                    return Failed;
-                }
-            }
-            if (getGameObject()->getCurrentTarget()->isJumping())
-            {
-                getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::BossJumpAttack);
-                int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::BossJumpAttack);
-                if (m_game)
-                    m_game->getPlayer().takeDamage(damage);
-                return Success;
+                boss->setStatePhaseOne(Boss::BossStatePhaseOne::Idle);
+                std::cout << "Hero is dead!" << std::endl;
+                return Failed;
             }
 
-            return Running;
+            boss->setStatePhaseOne(Boss::BossStatePhaseOne::BossJumpAttack);
+
+            sf::FloatRect bossAttackHitbox = boss->getHitbox();
+            sf::FloatRect heroHitbox = player.getHitbox();
+
+            if (bossAttackHitbox.intersects(heroHitbox))
+            {
+                int damage = boss->getAttackDamage(Boss::BossStatePhaseOne::BossJumpAttack);
+                player.takeDamage(damage);
+            }
+
+            return Success;
         }
     };
 
@@ -252,20 +307,29 @@ namespace BT
             : BehaviorNodeDecorator(parent), m_game(game) {}
         Status tick() override
         {
-            if (m_game)
+            if (!m_game) return Failed;
+
+            Hero& player = m_game->getPlayer();
+            Boss* boss = getGameObject();
+
+            if (player.getHp() <= 0)
             {
-                Hero& player = m_game->getPlayer();
-                if (player.getHp() <= 0)
-                {
-                    getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::IdleFlame);
-                    std::cout << "Hero is dead!" << std::endl;
-                    return Failed;
-                }
+                boss->setStatePhaseTwo(Boss::BossStatePhaseTwo::IdleFlame);
+                std::cout << "Hero is dead!" << std::endl;
+                return Failed;
             }
-            getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::BossJumpAttackFlame);
-            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::BossJumpAttackFlame);
-            if (m_game)
-                m_game->getPlayer().takeDamage(damage);
+
+            boss->setStatePhaseTwo(Boss::BossStatePhaseTwo::BossJumpAttackFlame);
+
+            sf::FloatRect bossAttackHitbox = boss->getHitbox();
+            sf::FloatRect heroHitbox = player.getHitbox();
+
+            if (bossAttackHitbox.intersects(heroHitbox))
+            {
+                int damage = boss->getAttackDamage(Boss::BossStatePhaseTwo::BossJumpAttackFlame);
+                player.takeDamage(damage);
+            }
+
             return Success;
         }
     };
@@ -313,7 +377,10 @@ namespace BT
                 return Failed;
 
             if (getGameObject()->getHitbox().intersects(getGameObject()->getCurrentTarget()->getHitbox()))
+            {
+                getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack1);
                 return Success;
+            }
 
             getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Run);
             auto target = getGameObject()->getCurrentTarget()->getPlayerPosition();
@@ -322,7 +389,7 @@ namespace BT
             float moveSpeed = 200.0f;
             sf::Vector2f direction = target - currentPos;
             float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-            float minSafeDistance = 80.0f;
+            float minSafeDistance = getGameObject()->getHitbox().width / 2 + getGameObject()->getCurrentTarget()->getHitbox().width / 2;
 
             if (distance > minSafeDistance)
             {

@@ -27,16 +27,20 @@ void Boss::initializeBehaviorTree()
 
     auto* attackSequence = new BT::Sequence(inAttackRange);
     new BT::BossAttack1(attackSequence, m_game);
-    new BT::Wait(attackSequence, 2.f);
+    new BT::Wait(attackSequence, 1.f);
     new BT::BossAttack2(attackSequence, m_game);
-    new BT::Wait(attackSequence, 2.f);
+    new BT::Wait(attackSequence, 1.f);
     new BT::BossAttack3(attackSequence, m_game);
-    new BT::Wait(attackSequence, 5.f);
+    new BT::Wait(attackSequence, 1.f);
 
     new BT::RunTowardsTarget(behavior, true);
-    new BT::Hurt(behavior);
 
-    /*auto* ifHealthLow = new BT::IfHealthLow(behavior);
+    /*auto* isHurtSequence = new BT::Sequence(behavior);
+    auto* isHurt = new BT::Sequence(isHurtSequence);
+    new BT::Hurt(isHurt);
+    new BT::Wait(isHurt, 1.f);*/
+
+    auto* ifHealthLow = new BT::IfHealthLow(behavior);
     auto* transformSequence = new BT::Sequence(ifHealthLow);
     new BT::TransformToPhaseTwo(transformSequence);
 
@@ -52,8 +56,8 @@ void Boss::initializeBehaviorTree()
     new BT::RunFlameTowardsTarget(phaseTwoSequence, true);
     new BT::IdleFlame(phaseTwoSequence);
 
-    new BT::HurtFlame(behavior);
-    new BT::Death(behavior);*/
+    /*new BT::HurtFlame(behavior);*/
+    new BT::Death(behavior);
 }
 
 void Boss::update(float deltaTime)
@@ -314,9 +318,9 @@ sf::FloatRect Boss::getHitboxPhaseOne(const sf::FloatRect& spriteRect) const
     case BossStatePhaseOne::Attack1:
     case BossStatePhaseOne::Attack2:
     case BossStatePhaseOne::Attack3:
-        width = spriteRect.width * 0.4f;
+        width = spriteRect.width * 0.2f;
         height = spriteRect.height * 0.8f;
-        offsetX = m_isFacingLeft ? spriteRect.width * 0.45f : spriteRect.width * 0.16f;
+        offsetX = m_isFacingLeft ? spriteRect.width * 0.5f : spriteRect.width * 0.35f;
         y = spriteRect.top + (spriteRect.height - height) * 0.2f;
         break;
 

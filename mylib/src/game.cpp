@@ -88,6 +88,36 @@ void Game::checkCollision()
             m_boss->getSprite().getPosition().y
         );
     }
+
+    /*if (playerHitbox.intersects(bossHitbox))
+    {
+       sf::Vector2f playerCenter(
+           playerHitbox.left + playerHitbox.width / 2.0f,
+           playerHitbox.top + playerHitbox.height / 2.0f
+       );
+       sf::Vector2f bossCenter(
+           bossHitbox.left + bossHitbox.width / 2.0f,
+           bossHitbox.top + bossHitbox.height / 2.0f
+       );
+
+       float dx = playerCenter.x - bossCenter.x;
+       float dy = playerCenter.y - bossCenter.y;
+
+       if (std::abs(dx) > std::abs(dy))
+       {
+           if (dx > 0)
+               m_player.getSprite().setPosition(bossHitbox.left + bossHitbox.width, playerHitbox.top);
+           else
+               m_player.getSprite().setPosition(bossHitbox.left - playerHitbox.width, playerHitbox.top);
+       }
+       else
+       {
+           if (dy > 0)
+               m_player.getSprite().setPosition(playerHitbox.left, bossHitbox.top + bossHitbox.height);
+           else
+               m_player.getSprite().setPosition(playerHitbox.left, bossHitbox.top - playerHitbox.height);
+       }
+    }*/
 }
 
 void Game::setBackground(sf::RenderWindow* window)
@@ -159,7 +189,7 @@ void Game::render()
     if (!m_renderWindow)
         return;
 
-    if (m_isGameOver)
+    if (m_isGameOver == true)
         displayGameOver();
 
     m_renderWindow->draw(m_backgroundShape);

@@ -25,7 +25,7 @@ bool Hero::isAttacking()
 
 bool Hero::isInvulnerable()
 {
-    return false;
+    return m_isInvulnerable;
 }
 
 bool Hero::isFacingLeft() const
@@ -43,27 +43,28 @@ bool Hero::isOnGround() const
     return m_isOnGround;
 }
 
+bool Hero::isMoving() const
+{
+    return m_horizontalVelocity != 0.f;
+}
+
 void Hero::takeDamage(int damage)
 {
-    if (m_isInvulnerable)
-        return;
+    if (m_isInvulnerable) return;
 
     m_health -= damage;
-    getIsHurt(true);
+
     if (m_health <= 0)
     {
-        m_health = 0;
-        m_isDead = true;
-        m_horizontalVelocity = 0;
-        m_verticalVelocity = 0;
-        setState(stateName::death);
+        setState(HeroStateNames::stateName::death);
     }
     else
     {
-        setState(stateName::hurt);
+        setState(HeroStateNames::stateName::hurt);
         setInvulnerable(1.0f);
     }
 }
+
 
 void Hero::setInvulnerable(float duration)
 {

@@ -402,19 +402,22 @@ void DodgeState::setTexture(Hero& hero)
 // HURT STATE
 void HurtState::handleInput(Hero& hero)
 {
-    if (m_elapsedTime.getElapsedTime().asSeconds() >= m_hurtDuration)
-    {
-        hero.getIsHurt(true);
-
-        if (isGoingLeft() || isGoingRight())
-            hero.setState(HeroStateNames::stateName::run);
-        else
-            hero.setState(HeroStateNames::stateName::idle);
-    }
+    if (m_hurtTimer.getElapsedTime().asSeconds() >= m_hurtDuration)
+        hero.setState(hero.isMoving() ? HeroStateNames::stateName::run : HeroStateNames::stateName::idle);
 }
 
 void HurtState::update(Hero& hero, float deltaTime)
 {
+    if (m_hurtTimer.getElapsedTime().asSeconds() >= m_hurtDuration)
+    {
+        if (hero.isMoving())
+            hero.setState(HeroStateNames::stateName::run);
+        else
+            hero.setState(HeroStateNames::stateName::idle);
+        
+        return;
+    }
+
     if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
     {
         m_currentFrame = (m_currentFrame + 1) % m_frameCount;
@@ -424,10 +427,13 @@ void HurtState::update(Hero& hero, float deltaTime)
     }
 }
 
+
 void HurtState::setTexture(Hero& hero)
 {
     hero.getSprite().setTexture(hero.getTexture(HeroStateNames::stateName::hurt));
+    m_hurtTimer.restart();
 }
+
 
 // DEATH STATE
 void DeathState::handleInput(Hero& hero)

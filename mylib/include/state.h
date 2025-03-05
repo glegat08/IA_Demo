@@ -165,6 +165,8 @@ protected:
 	const int m_frameWidth = 96;
 	const int m_frameHeight = 34;
 	const float m_hurtDuration = 0.5f;
+	sf::Clock m_hurtTimer;
+
 };
 
 class DeathState : public IState

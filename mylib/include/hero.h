@@ -33,6 +33,7 @@ public:
 	bool isFacingLeft() const;
 	bool isJumping() const;
 	bool isOnGround() const;
+	bool isMoving() const;
 
 
 	void takeDamage(int damage) override;
@@ -81,7 +82,7 @@ public:
 	bool getIsDead(bool newResult);
 
 protected:
-	int m_health = 40;
+	int m_health = 800;
 	int m_attackDmg = 51;
 
 	bool m_isIdle;
@@ -102,7 +103,7 @@ protected:
 	// GAMEPLAY
 	bool m_isInvulnerable = false;
 	sf::Clock m_invulnerabilityTimer;
-	float m_invulnerabilityDuration = 0.0f;
+	float m_invulnerabilityDuration = 0.f;
 
 	sf::Sprite m_sprites;
 	std::map<stateName, sf::Texture> m_textures;

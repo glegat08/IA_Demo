@@ -149,9 +149,9 @@ private:
     {BossStatePhaseOne::Idle, {6, 0.2f}},
     {BossStatePhaseOne::Run, {8, 0.1f}},
     {BossStatePhaseOne::Hurt, {4, 0.3f}},
-    {BossStatePhaseOne::Attack1, {7, 0.2f}},
-    {BossStatePhaseOne::Attack2, {6, 0.2f}},
-    {BossStatePhaseOne::Attack3, {7, 0.2f}},
+    {BossStatePhaseOne::Attack1, {7, 0.12f}},
+    {BossStatePhaseOne::Attack2, {6, 0.15f}},
+    {BossStatePhaseOne::Attack3, {7, 0.1f}},
     {BossStatePhaseOne::BossJumpAttack, {12, 0.08f}},
     {BossStatePhaseOne::Transformation, {17, 0.12f}}
     };
