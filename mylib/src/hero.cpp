@@ -45,24 +45,37 @@ bool Hero::isOnGround() const
 
 void Hero::takeDamage(int damage)
 {
+    if (m_isInvulnerable)
+        return;
+
     m_health -= damage;
+    getIsHurt(true);
     if (m_health <= 0)
     {
         m_health = 0;
-        m_stateManager.setState(this, stateName::death);
+        m_isDead = true;
+        m_horizontalVelocity = 0;
+        m_verticalVelocity = 0;
+        setState(stateName::death);
     }
     else
-        m_stateManager.setState(this, stateName::hurt);
+    {
+        setState(stateName::hurt);
+        setInvulnerable(1.0f);
+    }
 }
 
 void Hero::setInvulnerable(float duration)
 {
-
+    m_isInvulnerable = true;
+    m_invulnerabilityTimer.restart();
+    m_invulnerabilityDuration = duration;
 }
 
 void Hero::updateInvulnerabilityEffect()
 {
-
+    if (m_isInvulnerable && m_invulnerabilityTimer.getElapsedTime().asSeconds() >= m_invulnerabilityDuration)
+        m_isInvulnerable = false;
 }
 
 void Hero::attacking()
@@ -87,6 +100,7 @@ void Hero::handleInput()
 
 void Hero::update(float deltaTime)
 {
+    updateInvulnerabilityEffect();
     m_stateManager.update(*this, deltaTime);
 }
 
@@ -228,6 +242,16 @@ bool Hero::getIsHurt(bool newResult)
 bool Hero::getIsHurt()
 {
     return m_isHurt;
+}
+
+bool Hero::getIsDead()
+{
+    return m_isDead;
+}
+
+bool Hero::getIsDead(bool newResult)
+{
+    return m_isDead = newResult;
 }
 
 sf::Texture& Hero::getTexture(const stateName& stateName_)

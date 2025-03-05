@@ -402,9 +402,10 @@ void DodgeState::setTexture(Hero& hero)
 // HURT STATE
 void HurtState::handleInput(Hero& hero)
 {
-    if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
+    if (m_elapsedTime.getElapsedTime().asSeconds() >= m_hurtDuration)
     {
-        hero.getIsHurt(false);
+        hero.getIsHurt(true);
+
         if (isGoingLeft() || isGoingRight())
             hero.setState(HeroStateNames::stateName::run);
         else
@@ -437,8 +438,16 @@ void DeathState::update(Hero& hero, float deltaTime)
 {
     if (m_elapsedTime.getElapsedTime().asSeconds() >= m_frameTime)
     {
-        m_currentFrame = (m_currentFrame + 1) % m_frameCount;
+        m_currentFrame++;
         m_elapsedTime.restart();
+
+        if (m_currentFrame >= m_frameCount)
+        {
+            m_currentFrame = m_frameCount - 1;
+            m_animationComplete = true;
+            return;
+        }
+
         sf::IntRect currentFrameRect(m_currentFrame * m_frameWidth, 0, m_frameWidth, m_frameHeight);
         hero.getSprite().setTextureRect(currentFrameRect);
     }

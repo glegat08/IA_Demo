@@ -159,11 +159,12 @@ public:
 
 protected:
 	sf::Clock m_elapsedTime;
-	const float m_frameTime = 0.03f;
+	const float m_frameTime = 0.2f;
 	int m_currentFrame = 0;
-	const int m_frameCount = 3;
+	const int m_frameCount = 4;
 	const int m_frameWidth = 96;
 	const int m_frameHeight = 34;
+	const float m_hurtDuration = 0.5f;
 };
 
 class DeathState : public IState
@@ -175,9 +176,11 @@ public:
 
 protected:
 	sf::Clock m_elapsedTime;
-	const float m_frameTime = 1.f;
+	const float m_frameTime = 0.1f;
 	int m_currentFrame = 0;
 	const int m_frameCount = 9;
 	const int m_frameWidth = 96;
 	const int m_frameHeight = 34;
+
+	bool m_animationComplete = false;
 };

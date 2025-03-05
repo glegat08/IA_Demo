@@ -14,7 +14,7 @@ Game::Game(sf::RenderWindow* window, const float& framerate)
 
 void Game::setPlayer()
 {
-    m_player.getSprite().setPosition(100, 100);
+    m_player.getSprite().setPosition(100, 500);
 
     m_player.setState(HeroStateNames::stateName::jump);
 
@@ -46,8 +46,8 @@ void Game::checkCollision()
     else
         m_player.setOnGround(false);
 
-	if (m_boss->getHitbox().top + m_boss->getHitbox().height > getGroundHitbox().top)
-		m_boss->getSprite().setPosition(m_boss->getSprite().getPosition().x, getGroundHitbox().top - m_boss->getHitbox().height);
+    if (m_boss->getHitbox().top + m_boss->getHitbox().height > getGroundHitbox().top)
+        m_boss->getSprite().setPosition(m_boss->getSprite().getPosition().x, getGroundHitbox().top - m_boss->getHitbox().height);
 
     sf::FloatRect windowBounds = GetWindowCollision();
     sf::FloatRect playerHitbox = m_player.getHitbox();
@@ -71,23 +71,23 @@ void Game::checkCollision()
         );
     }
 
-	if (bossHitbox.left < windowBounds.left)
-	{
-		m_boss->getSprite().setPosition
-		(
-			windowBounds.left + (m_boss->getSprite().getPosition().x - bossHitbox.left),
-			m_boss->getSprite().getPosition().y
-		);
-	}
+    if (bossHitbox.left < windowBounds.left)
+    {
+        m_boss->getSprite().setPosition
+        (
+            windowBounds.left + (m_boss->getSprite().getPosition().x - bossHitbox.left),
+            m_boss->getSprite().getPosition().y
+        );
+    }
 
-	if (bossHitbox.left + bossHitbox.width > windowBounds.left + windowBounds.width)
-	{
-		m_boss->getSprite().setPosition
-		(
-			m_boss->getSprite().getPosition().x - ((bossHitbox.left + bossHitbox.width) - (windowBounds.left + windowBounds.width)),
-			m_boss->getSprite().getPosition().y
-		);
-	}
+    if (bossHitbox.left + bossHitbox.width > windowBounds.left + windowBounds.width)
+    {
+        m_boss->getSprite().setPosition
+        (
+            m_boss->getSprite().getPosition().x - ((bossHitbox.left + bossHitbox.width) - (windowBounds.left + windowBounds.width)),
+            m_boss->getSprite().getPosition().y
+        );
+    }
 }
 
 void Game::setBackground(sf::RenderWindow* window)
@@ -143,18 +143,11 @@ void Game::processInput(const sf::Event& event)
 
 void Game::update(const float& deltaTime)
 {
+    if (!m_player.isAlive())
+        m_isGameOver = true;
+
     m_player.update(deltaTime);
     m_boss->update(deltaTime);
-
-    float currentTime = m_fpsClock.getElapsedTime().asMilliseconds();
-    if (currentTime - m_fpsStartTime > 1000)
-    {
-        m_fpsText.setString("FPS: " + std::to_string(m_fpsCounter));
-        m_fpsStartTime = currentTime;
-        m_fpsCounter = 0;
-    }
-    m_fpsCounter++;
-
     checkCollision();
 
     if (m_isGameOver)
@@ -165,6 +158,9 @@ void Game::render()
 {
     if (!m_renderWindow)
         return;
+
+    if (m_isGameOver)
+        displayGameOver();
 
     m_renderWindow->draw(m_backgroundShape);
     m_renderWindow->draw(m_rectangle_shape);
@@ -192,15 +188,35 @@ void Game::drawHitboxes()
     playerHitboxShape.setOutlineColor(sf::Color::Green);
     playerHitboxShape.setOutlineThickness(2.f);
 
-	sf::FloatRect bossRect = m_boss->getHitbox();
-	sf::RectangleShape bossHitboxShape;
-	bossHitboxShape.setPosition(bossRect.left, bossRect.top);
-	bossHitboxShape.setSize(sf::Vector2f(bossRect.width, bossRect.height));
-	bossHitboxShape.setFillColor(sf::Color::Transparent);
-	bossHitboxShape.setOutlineColor(sf::Color::Blue);
-	bossHitboxShape.setOutlineThickness(2.f);
+    sf::FloatRect bossRect = m_boss->getHitbox();
+    sf::RectangleShape bossHitboxShape;
+    bossHitboxShape.setPosition(bossRect.left, bossRect.top);
+    bossHitboxShape.setSize(sf::Vector2f(bossRect.width, bossRect.height));
+    bossHitboxShape.setFillColor(sf::Color::Transparent);
+    bossHitboxShape.setOutlineColor(sf::Color::Blue);
+    bossHitboxShape.setOutlineThickness(2.f);
 
     m_renderWindow->draw(groundHitboxShape);
     m_renderWindow->draw(playerHitboxShape);
-	m_renderWindow->draw(bossHitboxShape);
+    m_renderWindow->draw(bossHitboxShape);
+}
+
+void Game::displayGameOver()
+{
+    sf::RectangleShape overlay(sf::Vector2f(m_renderWindow->getSize()));
+    overlay.setFillColor(sf::Color(0, 0, 0, 128));
+
+    m_gameOverText.setFont(m_scoreFont);
+    m_gameOverText.setString("GAME OVER");
+    m_gameOverText.setCharacterSize(72);
+    m_gameOverText.setFillColor(sf::Color::Red);
+
+    sf::FloatRect textBounds = m_gameOverText.getLocalBounds();
+    m_gameOverText.setPosition(
+        (m_renderWindow->getSize().x - textBounds.width) / 2,
+        (m_renderWindow->getSize().y - textBounds.height) / 2
+    );
+
+    m_renderWindow->draw(overlay);
+    m_renderWindow->draw(m_gameOverText);
 }

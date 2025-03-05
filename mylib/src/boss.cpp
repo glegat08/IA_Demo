@@ -8,7 +8,7 @@
 Boss::Boss(Game* game)
     : m_game(game)
     , m_currentTarget(nullptr)
-    , m_health(300)
+    , m_health(100)
     , m_phaseTwoActive(false)
     , m_isInvulnerable(false)
     , m_isAttacking(false)
@@ -19,60 +19,47 @@ Boss::Boss(Game* game)
     initializeBehaviorTree();
 }
 
-void Boss::initializeBehaviorTree() {
+void Boss::initializeBehaviorTree()
+{
     auto* behavior = new BT::Sequence(&m_rootNode);
-    if (!behavior)
-        throw std::runtime_error("memory allocation error");
 
-    auto* Sequence1 = new BT::Sequence(behavior);
-    new BT::Idle(Sequence1);
-    new BT::Wait(Sequence1, 1.0f);
-    new BT::RunTowardsTarget(Sequence1, true);
-    new BT::BossAttack1(Sequence1, m_game);
-    new BT::Wait(Sequence1, 0.5f);
-    new BT::BossAttack2(Sequence1, m_game);
-    new BT::Wait(Sequence1, 0.5f);
-    new BT::BossAttack3(Sequence1, m_game);
-    new BT::Wait(Sequence1, 1.0f);
+    auto* inAttackRange = new BT::CheckTargetInRange(behavior, 150.f);
 
-    auto* ifHealthLow = new BT::IfHealthLow(behavior);
+    auto* attackSequence = new BT::Sequence(inAttackRange);
+    new BT::BossAttack1(attackSequence, m_game);
+    new BT::Wait(attackSequence, 2.f);
+    new BT::BossAttack2(attackSequence, m_game);
+    new BT::Wait(attackSequence, 2.f);
+    new BT::BossAttack3(attackSequence, m_game);
+    new BT::Wait(attackSequence, 5.f);
+
+    new BT::RunTowardsTarget(behavior, true);
+    new BT::Hurt(behavior);
+
+    /*auto* ifHealthLow = new BT::IfHealthLow(behavior);
     auto* transformSequence = new BT::Sequence(ifHealthLow);
     new BT::TransformToPhaseTwo(transformSequence);
 
     auto* ifPhaseTwo = new BT::IfPhaseTwo(behavior);
     auto* phaseTwoSequence = new BT::Sequence(ifPhaseTwo);
     new BT::BossAttackFlame1(phaseTwoSequence, m_game);
+    new BT::Wait(phaseTwoSequence, 0.5f);
     new BT::BossAttackFlame2(phaseTwoSequence, m_game);
+    new BT::Wait(phaseTwoSequence, 0.5f);
     new BT::BossAttackFlame3(phaseTwoSequence, m_game);
+    new BT::Wait(phaseTwoSequence, 0.1f);
     new BT::BossJumpAttackFlame(phaseTwoSequence, m_game);
-    new BT::RunFlameTowardsPlayer(phaseTwoSequence);
+    new BT::RunFlameTowardsTarget(phaseTwoSequence, true);
     new BT::IdleFlame(phaseTwoSequence);
 
-    new BT::Hurt(behavior);
     new BT::HurtFlame(behavior);
-    new BT::Death(behavior);
-
-    /*auto* setInvulnerableNode = new BT::SetInvulnerability(behavior, true);
-    auto* WaitForInvu = new BT::Wait(setInvulnerableNode, 3.0f);
-    auto* InvuWhileShoutNode = new BT::SetInvulnerability(WaitForInvu, false);*/
-
-    auto* comboAttack = new BT::ComboAttackSequence(behavior, 0.7f);
-    comboAttack->addAttackToSequence(new BT::BossAttack1(comboAttack, m_game));
-    comboAttack->addAttackToSequence(new BT::BossAttack2(comboAttack, m_game));
-    comboAttack->addAttackToSequence(new BT::BossAttack3(comboAttack, m_game));
-
-    auto* tooCloseSelector = new BT::AttackOrChaseSelector(behavior);
-    auto* CheckTargetInRange = new BT::CheckTargetInRange(tooCloseSelector, 150.0f);
-    new BT::FleeFromTarget(CheckTargetInRange, 2.0f);
-
-    auto* phaseTwo = new BT::IfPhaseTwo(behavior);
-    auto* randomTeleport = new BT::RandomChance(phaseTwo, 0.2f);
-    new BT::BossTeleport(randomTeleport, 250.0f);
+    new BT::Death(behavior);*/
 }
 
 void Boss::update(float deltaTime)
 {
-	m_rootNode.tick();
+    m_rootNode.tick();
+
     updateAnimation();
     updateInvulnerabilityEffect();
     findValidTarget();
@@ -121,9 +108,9 @@ void Boss::findValidTarget()
 {
     if (m_game)
     {
-        Hero* heroPtr = &(m_game->getPlayer());
-        if (heroPtr && heroPtr->isAlive())
-            m_currentTarget = heroPtr;
+        Hero& hero = m_game->getPlayer();
+        if (hero.isAlive())
+            m_currentTarget = &hero;
         else
             m_currentTarget = nullptr;
     }
@@ -297,6 +284,15 @@ int Boss::getHp() const
 sf::FloatRect Boss::getHitbox() const
 {
     sf::FloatRect spriteRect = m_sprites.getGlobalBounds();
+
+    if (isInPhaseOne())
+        return getHitboxPhaseOne(spriteRect);
+    else
+        return getHitboxPhaseTwo(spriteRect);
+}
+
+sf::FloatRect Boss::getHitboxPhaseOne(const sf::FloatRect& spriteRect) const
+{
     float width, height, offsetX, y;
 
     switch (m_currentStateName)
@@ -304,75 +300,40 @@ sf::FloatRect Boss::getHitbox() const
     case BossStatePhaseOne::Idle:
         width = spriteRect.width * 0.2f;
         height = spriteRect.height * 0.8f;
-        if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.5f;
-        else
-            offsetX = spriteRect.width * 0.35f;
-
+        offsetX = m_isFacingLeft ? spriteRect.width * 0.5f : spriteRect.width * 0.35f;
         y = spriteRect.top + (spriteRect.height - height) * 0.2f;
-
         break;
+
     case BossStatePhaseOne::Run:
-        width = spriteRect.width * 0.3;
+        width = spriteRect.width * 0.3f;
         height = spriteRect.height * 0.8f;
-        if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.7f;
-        else
-            offsetX = spriteRect.width * 0.02f;
-
+        offsetX = m_isFacingLeft ? spriteRect.width * 0.7f : spriteRect.width * 0.02f;
         y = spriteRect.top + (spriteRect.height - height) * 0.2f;
-
         break;
+
     case BossStatePhaseOne::Attack1:
-        width = spriteRect.width * 0.4f;
-        height = spriteRect.height * 0.8f;
-
-        if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.18f;
-        else
-            offsetX = spriteRect.width * 0.42f;
-
-        y = spriteRect.top + (spriteRect.height - height) * 0.2f;
-
-        break;
     case BossStatePhaseOne::Attack2:
-        width = spriteRect.width * 0.4f;
-        height = spriteRect.height * 0.8f;
-        if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.18f;
-        else
-            offsetX = spriteRect.width * 0.42f;
-
-        y = spriteRect.top + (spriteRect.height - height) * 0.2f;
-
-        break;
     case BossStatePhaseOne::Attack3:
         width = spriteRect.width * 0.4f;
         height = spriteRect.height * 0.8f;
-        if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.18f;
-        else
-            offsetX = spriteRect.width * 0.42f;
-
+        offsetX = m_isFacingLeft ? spriteRect.width * 0.45f : spriteRect.width * 0.16f;
         y = spriteRect.top + (spriteRect.height - height) * 0.2f;
-
         break;
+
     case BossStatePhaseOne::BossJumpAttack:
         width = spriteRect.width * 0.55f;
         height = spriteRect.height * 0.8f;
-        if (m_isFacingLeft)
-            offsetX = spriteRect.width * 0.32f;
-        else
-            offsetX = spriteRect.width * 0.32f;
-
+        offsetX = spriteRect.width * 0.32f;
         y = spriteRect.top + (spriteRect.height - height) * 0.25f;
         break;
+
     case BossStatePhaseOne::Hurt:
         width = spriteRect.width * 0.28f;
         height = spriteRect.height * 0.8f;
         offsetX = spriteRect.width * 0.36f;
         y = spriteRect.top + (spriteRect.height - height) * 0.2f;
         break;
+
     case BossStatePhaseOne::Transformation:
         width = spriteRect.width * 0.4f;
         height = spriteRect.height * 0.8f;
@@ -381,27 +342,107 @@ sf::FloatRect Boss::getHitbox() const
         break;
     }
 
-    float x = spriteRect.left + offsetX;
-
-    return sf::FloatRect(x, y, width, height);
+    return sf::FloatRect(spriteRect.left + offsetX, y, width, height);
 }
+
+sf::FloatRect Boss::getHitboxPhaseTwo(const sf::FloatRect& spriteRect) const
+{
+    float width, height, offsetX, y;
+
+    switch (m_currentStateNameP2)
+    {
+    case BossStatePhaseTwo::IdleFlame:
+        width = spriteRect.width * 0.25f;
+        height = spriteRect.height * 0.9f;
+        offsetX = m_isFacingLeft ? spriteRect.width * 0.4f : spriteRect.width * 0.3f;
+        y = spriteRect.top + (spriteRect.height - height) * 0.1f;
+        break;
+
+    case BossStatePhaseTwo::RunFlame:
+        width = spriteRect.width * 0.35f;
+        height = spriteRect.height * 0.85f;
+        offsetX = m_isFacingLeft ? spriteRect.width * 0.75f : spriteRect.width * 0.05f;
+        y = spriteRect.top + (spriteRect.height - height) * 0.1f;
+        break;
+
+    case BossStatePhaseTwo::AttackFlame1:
+    case BossStatePhaseTwo::AttackFlame2:
+    case BossStatePhaseTwo::AttackFlame3:
+        width = spriteRect.width * 0.45f;
+        height = spriteRect.height * 0.9f;
+        offsetX = m_isFacingLeft ? spriteRect.width * 0.5f : spriteRect.width * 0.2f;
+        y = spriteRect.top + (spriteRect.height - height) * 0.1f;
+        break;
+
+    case BossStatePhaseTwo::BossJumpAttackFlame:
+        width = spriteRect.width * 0.55f;
+        height = spriteRect.height * 1.0f;
+        offsetX = spriteRect.width * 0.3f;
+        y = spriteRect.top + (spriteRect.height - height) * 0.2f;
+        break;
+
+    case BossStatePhaseTwo::HurtFlame:
+        width = spriteRect.width * 0.3f;
+        height = spriteRect.height * 0.85f;
+        offsetX = spriteRect.width * 0.4f;
+        y = spriteRect.top + (spriteRect.height - height) * 0.1f;
+        break;
+
+    case BossStatePhaseTwo::Death:
+        width = spriteRect.width * 0.5f;
+        height = spriteRect.height * 0.85f;
+        offsetX = spriteRect.width * 0.35f;
+        y = spriteRect.top + (spriteRect.height - height) * 0.15f;
+        break;
+    }
+
+    return sf::FloatRect(spriteRect.left + offsetX, y, width, height);
+}
+
+bool Boss::isInPhaseOne() const
+{
+    switch (m_currentStateName)
+    {
+    case BossStatePhaseOne::Idle:
+    case BossStatePhaseOne::Run:
+    case BossStatePhaseOne::Attack1:
+    case BossStatePhaseOne::Attack2:
+    case BossStatePhaseOne::Attack3:
+    case BossStatePhaseOne::BossJumpAttack:
+    case BossStatePhaseOne::Hurt:
+    case BossStatePhaseOne::Transformation:
+        return true;
+    default:
+        return false;
+    }
+}
+
 
 int Boss::getAttackDamage(BossStatePhaseOne attackType) const
 {
+    int dmg = 0;
     switch (attackType)
     {
     case BossStatePhaseOne::Attack1:
-        return attack1Damage;
+        dmg = attack1Damage;
+        break;
     case BossStatePhaseOne::Attack2:
-        return attack2Damage;
+        dmg = attack2Damage;
+        break;
     case BossStatePhaseOne::Attack3:
-        return attack3Damage;
+        dmg = attack3Damage;
+        break;
     case BossStatePhaseOne::BossJumpAttack:
-        return jumpAttackDamage;
+        dmg = jumpAttackDamage;
+        break;
     default:
-        return 0;
+        dmg = 0;
     }
+
+    std::cout << "Damage delt : " << dmg << std::endl;
+    return dmg;
 }
+
 
 int Boss::getAttackDamage(BossStatePhaseTwo attackType) const
 {

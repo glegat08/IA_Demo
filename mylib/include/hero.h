@@ -77,10 +77,12 @@ public:
 	bool getIsJumping();
 	bool getIsHurt(bool newResult);
 	bool getIsHurt();
+	bool getIsDead();
+	bool getIsDead(bool newResult);
 
 protected:
-	int m_health = 100;
-	int m_attackDmg = 10;
+	int m_health = 40;
+	int m_attackDmg = 51;
 
 	bool m_isIdle;
 	bool m_isAttacking;
@@ -88,7 +90,8 @@ protected:
 	bool m_isJumping;
 	bool m_isOnGround = false;
 	bool m_isAirDodging = false;
-	bool m_isHurt;
+	bool m_isHurt = false;
+	bool m_isDead = false;
 
 	float m_speed = 70.f;
 	float m_horizontalVelocity = 0.f;
@@ -97,10 +100,9 @@ protected:
 
 protected:
 	// GAMEPLAY
-	sf::Clock m_invulnerableClock;
-	sf::Clock m_blinkClock;
-	float m_invulnerableDuration;
 	bool m_isInvulnerable = false;
+	sf::Clock m_invulnerabilityTimer;
+	float m_invulnerabilityDuration = 0.0f;
 
 	sf::Sprite m_sprites;
 	std::map<stateName, sf::Texture> m_textures;

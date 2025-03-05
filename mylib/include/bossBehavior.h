@@ -35,7 +35,6 @@ namespace BT
         Status tick() override
         {
             getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Transformation);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::Transformation));
             getGameObject()->switchToPhaseTwo();
             return Success;
         }
@@ -51,18 +50,20 @@ namespace BT
 
         Status tick() override
         {
-            getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack1);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::Attack1));
-            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack1);
-
             if (m_game)
             {
                 Hero& player = m_game->getPlayer();
-                if (getGameObject()->getHitbox().intersects(player.getHitbox()))
+                if (player.getHp() <= 0)
                 {
-                    player.takeDamage(damage);
+                    getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Idle);
+                    std::cout << "Hero is dead!" << std::endl;
+                    return Failed;
                 }
             }
+            getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack1);
+            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack1);
+            if (m_game)
+                m_game->getPlayer().takeDamage(damage);
 
             return Success;
         }
@@ -78,11 +79,21 @@ namespace BT
             : BehaviorNodeDecorator(parent), m_game(game) {}
         Status tick() override
         {
+            if (m_game)
+            {
+                Hero& player = m_game->getPlayer();
+                if (player.getHp() <= 0)
+                {
+                    getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::IdleFlame);
+                    std::cout << "Hero is dead!" << std::endl;
+                    return Failed;
+                }
+            }
             getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::AttackFlame1);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture2(Boss::BossStatePhaseTwo::AttackFlame1));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame1);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
+
             return Success;
         }
     };
@@ -94,13 +105,24 @@ namespace BT
     public:
         BossAttack2(ICompositeNode* parent, Game* game)
             : BehaviorNodeDecorator(parent), m_game(game) {}
+
         Status tick() override
         {
+            if (m_game)
+            {
+                Hero& player = m_game->getPlayer();
+                if (player.getHp() <= 0)
+                {
+                    getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Idle);
+                    std::cout << "Hero is dead!" << std::endl;
+                    return Failed;
+                }
+            }
             getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack2);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::Attack2));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack2);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
+
             return Success;
         }
     };
@@ -114,12 +136,22 @@ namespace BT
             : BehaviorNodeDecorator(parent), m_game(game) {}
         Status tick() override
         {
+            if (m_game)
+            {
+                Hero& player = m_game->getPlayer();
+                if (player.getHp() <= 0)
+                {
+                    getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::IdleFlame);
+                    std::cout << "Hero is dead!" << std::endl;
+                    return Failed;
+                }
+            }
             getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::AttackFlame2);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture2(Boss::BossStatePhaseTwo::AttackFlame2));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame2);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
-            return Success;
+
+            return Running;
         }
     };
 
@@ -130,13 +162,24 @@ namespace BT
     public:
         BossAttack3(ICompositeNode* parent, Game* game)
             : BehaviorNodeDecorator(parent), m_game(game) {}
+
         Status tick() override
         {
+            if (m_game)
+            {
+                Hero& player = m_game->getPlayer();
+                if (player.getHp() <= 0)
+                {
+                    getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Idle);
+                    std::cout << "Hero is dead!" << std::endl;
+                    return Failed;
+                }
+            }
             getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack3);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::Attack3));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack3);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
+
             return Success;
         }
     };
@@ -150,8 +193,17 @@ namespace BT
             : BehaviorNodeDecorator(parent), m_game(game) {}
         Status tick() override
         {
+            if (m_game)
+            {
+                Hero& player = m_game->getPlayer();
+                if (player.getHp() <= 0)
+                {
+                    getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::IdleFlame);
+                    std::cout << "Hero is dead!" << std::endl;
+                    return Failed;
+                }
+            }
             getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::AttackFlame3);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture2(Boss::BossStatePhaseTwo::AttackFlame3));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame3);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
@@ -168,10 +220,19 @@ namespace BT
             : BehaviorNodeDecorator(parent), m_game(game) {}
         Status tick() override
         {
+            if (m_game)
+            {
+                Hero& player = m_game->getPlayer();
+                if (player.getHp() <= 0)
+                {
+                    getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Idle);
+                    std::cout << "Hero is dead!" << std::endl;
+                    return Failed;
+                }
+            }
             if (getGameObject()->getCurrentTarget()->isJumping())
             {
                 getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::BossJumpAttack);
-                getGameObject()->getSprite().setTexture(getGameObject()->getTexture(Boss::BossStatePhaseOne::BossJumpAttack));
                 int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::BossJumpAttack);
                 if (m_game)
                     m_game->getPlayer().takeDamage(damage);
@@ -191,8 +252,17 @@ namespace BT
             : BehaviorNodeDecorator(parent), m_game(game) {}
         Status tick() override
         {
+            if (m_game)
+            {
+                Hero& player = m_game->getPlayer();
+                if (player.getHp() <= 0)
+                {
+                    getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::IdleFlame);
+                    std::cout << "Hero is dead!" << std::endl;
+                    return Failed;
+                }
+            }
             getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::BossJumpAttackFlame);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture2(Boss::BossStatePhaseTwo::BossJumpAttackFlame));
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::BossJumpAttackFlame);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
@@ -239,34 +309,41 @@ namespace BT
 
         Status tick() override
         {
-            getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Run);
-            auto target = getGameObject()->getCurrentTarget()->getPlayerPosition();
-            auto directionX = target - getGameObject()->getSprite().getPosition();
-
-            float moveSpeed = 200.0f;
-            float deltaTime = 0.016f;
-
-            if (getGameObject()->getSprite().getPosition().x < getGameObject()->getCurrentTarget()->getPlayerPosition().x)
-            {
-                getGameObject()->getSprite().move(moveSpeed * deltaTime, 0.0f);
-                sf::Vector2f currentPos = getGameObject()->getSprite().getPosition();
-                getGameObject()->getSprite().setScale(2.f, 2.f);
-                getGameObject()->isFacingLeft(false);
-                getGameObject()->getSprite().setPosition(currentPos);
-            }
-            else if (getGameObject()->getSprite().getPosition().x > getGameObject()->getCurrentTarget()->getPlayerPosition().x)
-            {
-                getGameObject()->getSprite().move(-moveSpeed * deltaTime, 0.0f);
-                sf::Vector2f currentPos = getGameObject()->getSprite().getPosition();
-                getGameObject()->getSprite().setScale(-2.f, 2.f);
-                getGameObject()->isFacingLeft(true);
-                getGameObject()->getSprite().setPosition(currentPos);
-            }
+            if (!getGameObject()->getCurrentTarget())
+                return Failed;
 
             if (getGameObject()->getHitbox().intersects(getGameObject()->getCurrentTarget()->getHitbox()))
                 return Success;
 
+            getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Run);
+            auto target = getGameObject()->getCurrentTarget()->getPlayerPosition();
+            auto currentPos = getGameObject()->getSprite().getPosition();
+
+            float moveSpeed = 200.0f;
+            sf::Vector2f direction = target - currentPos;
+            float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+            float minSafeDistance = 80.0f;
+
+            if (distance > minSafeDistance)
+            {
+                direction /= distance;
+                sf::Vector2f movement = direction * moveSpeed * 0.015f;
+
+                if (direction.x > 0)
+                {
+                    getGameObject()->isFacingLeft(false);
+                    getGameObject()->getSprite().setScale(2.f, 2.f);
+                }
+                else
+                {
+                    getGameObject()->isFacingLeft(true);
+                    getGameObject()->getSprite().setScale(-2.f, 2.f);
+                }
+
+                getGameObject()->getSprite().move(movement);
+            }
             return Running;
+
         }
     };
 
@@ -324,15 +401,51 @@ namespace BT
         }
     };
 
-    class RunFlameTowardsPlayer : public BehaviorNodeDecorator<class Boss, IActionNode>
+    class RunFlameTowardsTarget : public BehaviorNodeDecorator<class Boss, IActionNode>
     {
+    private:
+        bool m_isPlayer;
     public:
-        RunFlameTowardsPlayer(ICompositeNode* parent) : BehaviorNodeDecorator(parent) {}
+        RunFlameTowardsTarget(ICompositeNode* parent, bool isPlayer)
+            : BehaviorNodeDecorator(parent), m_isPlayer(isPlayer) {}
+
         Status tick() override
         {
+            if (!getGameObject()->getCurrentTarget())
+                return Failed;
+
+            if (getGameObject()->getHitbox().intersects(getGameObject()->getCurrentTarget()->getHitbox()))
+                return Success;
+
             getGameObject()->setStatePhaseTwo(Boss::BossStatePhaseTwo::RunFlame);
-            getGameObject()->getSprite().setTexture(getGameObject()->getTexture2(Boss::BossStatePhaseTwo::RunFlame));
-            return Success;
+            auto target = getGameObject()->getCurrentTarget()->getPlayerPosition();
+            auto currentPos = getGameObject()->getSprite().getPosition();
+
+            float moveSpeed = 200.0f;
+            sf::Vector2f direction = target - currentPos;
+            float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+            float minSafeDistance = 80.0f;
+
+            if (distance > minSafeDistance)
+            {
+                direction /= distance;
+                sf::Vector2f movement = direction * moveSpeed * 0.015f;
+
+                if (direction.x > 0)
+                {
+                    getGameObject()->isFacingLeft(false);
+                    getGameObject()->getSprite().setScale(2.f, 2.f);
+                }
+                else
+                {
+                    getGameObject()->isFacingLeft(true);
+                    getGameObject()->getSprite().setScale(-2.f, 2.f);
+                }
+
+                getGameObject()->getSprite().move(movement);
+            }
+            return Running;
+
         }
     };
 
@@ -396,7 +509,8 @@ namespace BT
         }
     };
 
-    class Wait : public IActionNode {
+    class Wait : public IActionNode
+    {
     private:
         sf::Time m_duration;
         sf::Clock m_timer;
@@ -416,11 +530,17 @@ namespace BT
 
             if (m_timer.getElapsedTime() >= m_duration)
             {
-                m_started = false;
+                reset();
                 return Success;
             }
 
             return Running;
+        }
+
+        void reset()
+        {
+            m_started = false;
+            m_timer.restart();
         }
     };
 

@@ -54,10 +54,11 @@ public:
     {}
 
     Boss(Game* game);
-
     void initializeBehaviorTree();
 
     void update(float deltaTime);
+    void updateTimedActions();
+    void updateMovementAndAttack(float deltaTime);
     void findValidTarget();
     void switchToPhaseTwo();
     void loadTextures();
@@ -82,7 +83,11 @@ public:
     void setHp(int health);
     int getHp() const;
     sf::FloatRect getHitbox() const;
+    sf::FloatRect getHitboxPhaseOne(const sf::FloatRect& spriteRect) const;
+    sf::FloatRect getHitboxPhaseTwo(const sf::FloatRect& spriteRect) const;
+    bool isInPhaseOne() const;
     Hero* getCurrentTarget() const;
+    void moveTowardsPlayer(float deltaTime);
     void retreatFromPlayer(float deltaTime);
 
     //attack
@@ -126,13 +131,13 @@ private:
 
     //attack ratio
     int attack1Damage = 10;
-    int attack2Damage = 20;
-    int attack3Damage = 30;
-    int jumpAttackDamage = 40;
+    int attack2Damage = 10;
+    int attack3Damage = 10;
+    int jumpAttackDamage = 20;
     int attackFlame1Damage = 20;
-    int attackFlame2Damage = 30;
-    int attackFlame3Damage = 40;
-    int jumpAttackFlameDamage = 40;
+    int attackFlame2Damage = 20;
+    int attackFlame3Damage = 20;
+    int jumpAttackFlameDamage = 30;
 
     sf::Sprite m_sprites;
     std::unordered_map<std::string, sf::Clock> m_actionTimers;
@@ -144,9 +149,9 @@ private:
     {BossStatePhaseOne::Idle, {6, 0.2f}},
     {BossStatePhaseOne::Run, {8, 0.1f}},
     {BossStatePhaseOne::Hurt, {4, 0.3f}},
-    {BossStatePhaseOne::Attack1, {7, 0.12f}},
-    {BossStatePhaseOne::Attack2, {6, 0.15f}},
-    {BossStatePhaseOne::Attack3, {7, 0.1f}},
+    {BossStatePhaseOne::Attack1, {7, 0.2f}},
+    {BossStatePhaseOne::Attack2, {6, 0.2f}},
+    {BossStatePhaseOne::Attack3, {7, 0.2f}},
     {BossStatePhaseOne::BossJumpAttack, {12, 0.08f}},
     {BossStatePhaseOne::Transformation, {17, 0.12f}}
     };
