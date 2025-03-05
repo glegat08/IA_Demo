@@ -27,11 +27,11 @@ void Boss::initializeBehaviorTree()
 
     auto* attackSequence = new BT::Sequence(inAttackRange);
     new BT::BossAttack1(attackSequence, m_game);
-    new BT::Wait(attackSequence, 2.f);
+    new BT::Wait(attackSequence, 1.f);
     new BT::BossAttack2(attackSequence, m_game);
-    new BT::Wait(attackSequence, 2.f);
+    new BT::Wait(attackSequence, 1.f);
     new BT::BossAttack3(attackSequence, m_game);
-    new BT::Wait(attackSequence, 5.f);
+    new BT::Wait(attackSequence, 1.f);
 
     new BT::RunTowardsTarget(behavior, true);
     new BT::Hurt(behavior);

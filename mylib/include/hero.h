@@ -102,7 +102,7 @@ protected:
 	// GAMEPLAY
 	bool m_isInvulnerable = false;
 	sf::Clock m_invulnerabilityTimer;
-	float m_invulnerabilityDuration = 0.0f;
+	float m_invulnerabilityDuration = 0.f;
 
 	sf::Sprite m_sprites;
 	std::map<stateName, sf::Texture> m_textures;

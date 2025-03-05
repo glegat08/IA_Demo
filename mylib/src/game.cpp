@@ -159,7 +159,7 @@ void Game::render()
     if (!m_renderWindow)
         return;
 
-    if (m_isGameOver)
+    if (m_isGameOver == true)
 		displayGameOver();
 
     m_renderWindow->draw(m_backgroundShape);

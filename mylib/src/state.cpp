@@ -402,10 +402,8 @@ void DodgeState::setTexture(Hero& hero)
 // HURT STATE
 void HurtState::handleInput(Hero& hero)
 {
-    if (m_elapsedTime.getElapsedTime().asSeconds() >= m_hurtDuration)
+    if (!hero.isInvulnerable())
     {
-        hero.getIsHurt(true);
-
         if (isGoingLeft() || isGoingRight())
             hero.setState(HeroStateNames::stateName::run);
         else
