@@ -27,11 +27,11 @@ void Boss::initializeBehaviorTree()
 
     auto* attackSequence = new BT::Sequence(inAttackRange);
     new BT::BossAttack1(attackSequence, m_game);
-    new BT::Wait(attackSequence, 0.5f);
+    new BT::Wait(attackSequence, 2.f);
     new BT::BossAttack2(attackSequence, m_game);
-    new BT::Wait(attackSequence, 0.5f);
+    new BT::Wait(attackSequence, 2.f);
     new BT::BossAttack3(attackSequence, m_game);
-    new BT::Wait(attackSequence, 1.0f);
+    new BT::Wait(attackSequence, 5.f);
 
     new BT::RunTowardsTarget(behavior, true);
     new BT::Hurt(behavior);
@@ -439,7 +439,7 @@ int Boss::getAttackDamage(BossStatePhaseOne attackType) const
         dmg = 0;
     }
 
-    std::cout << "Damage delt by :" << static_cast<int>(attackType) << " : " << dmg << std::endl;
+    std::cout << "Damage delt : " << dmg << std::endl;
     return dmg;
 }
 

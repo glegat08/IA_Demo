@@ -10,6 +10,8 @@ HeroState::HeroState() : m_currentState(nullptr), m_currentStateName(StateEnum::
     m_states[StateEnum::dodge] = std::make_shared<DodgeState>();
     m_states[StateEnum::jump_attack] = std::make_shared<JumpAttack>();
     m_states[StateEnum::block] = std::make_shared<BlockState>();
+	m_states[StateEnum::hurt] = std::make_shared<HurtState>();
+	m_states[StateEnum::death] = std::make_shared<DeathState>();
 
     m_currentState = m_states[StateEnum::idle];
 }
@@ -27,6 +29,14 @@ HeroState::~HeroState()
 
 void HeroState::setState(Hero* hero, HeroStateNames::stateName newState)
 {
+    if (newState == StateEnum::death)
+    {
+        while (!m_stateStack.empty())
+        {
+            m_stateStack.pop();
+        }
+    }
+
     if (m_states.find(newState) == m_states.end())
         return;
 

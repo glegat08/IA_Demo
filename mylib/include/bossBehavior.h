@@ -60,14 +60,12 @@ namespace BT
                     return Failed;
                 }
             }
+                getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack1);
+                int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack1);
+                if (m_game)
+                    m_game->getPlayer().takeDamage(damage);
 
-            getGameObject()->setStatePhaseOne(Boss::BossStatePhaseOne::Attack1);
-            int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack1);
-
-            if (m_game)
-                m_game->getPlayer().takeDamage(damage);
-
-            return Success;
+        	return Success;
         }
     };
 
@@ -95,6 +93,7 @@ namespace BT
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame1);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
+
             return Success;
         }
     };
@@ -106,6 +105,7 @@ namespace BT
     public:
         BossAttack2(ICompositeNode* parent, Game* game)
             : BehaviorNodeDecorator(parent), m_game(game) {}
+
         Status tick() override
         {
             if (m_game)
@@ -122,6 +122,7 @@ namespace BT
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack2);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
+
             return Success;
         }
     };
@@ -149,7 +150,8 @@ namespace BT
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseTwo::AttackFlame2);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
-            return Success;
+
+            return Running;
         }
     };
 
@@ -160,6 +162,7 @@ namespace BT
     public:
         BossAttack3(ICompositeNode* parent, Game* game)
             : BehaviorNodeDecorator(parent), m_game(game) {}
+
         Status tick() override
         {
             if (m_game)
@@ -176,6 +179,7 @@ namespace BT
             int damage = getGameObject()->getAttackDamage(Boss::BossStatePhaseOne::Attack3);
             if (m_game)
                 m_game->getPlayer().takeDamage(damage);
+
             return Success;
         }
     };
@@ -505,7 +509,8 @@ namespace BT
         }
     };
 
-    class Wait : public IActionNode {
+    class Wait : public IActionNode
+	{
     private:
         sf::Time m_duration;
         sf::Clock m_timer;
@@ -525,11 +530,17 @@ namespace BT
 
             if (m_timer.getElapsedTime() >= m_duration) 
             {
-                m_started = false;
+                reset();
                 return Success;
             }
 
             return Running;
+        }
+
+        void reset()
+    	{
+            m_started = false;
+            m_timer.restart();
         }
     };
 }
