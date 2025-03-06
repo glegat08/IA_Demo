@@ -8,14 +8,18 @@ To start the project, please follow those steps :
 
 -> Use your IDE's terminal and write ".\Bootstrap.bat"
 
--> Close your IDE then go to your folder, build's folder then launch the .sln
+-> Close your IDE then go to your folder, into the build folder then launch the .sln
 
 -> Set "mainFile" as startup project
 
 -> And go to Properties, Linker, Input and make sure you have those lines (for Debug Config) or it won't work :
-    "sfml-graphics-d.lib
-     sfml-window-d.lib
-     sfml-system-d.lib
-     sfml-audio-d.lib"
+    
+    sfml-graphics-d.lib
+     
+    sfml-window-d.lib
+     
+    sfml-system-d.lib
+    
+    sfml-audio-d.lib
 
 -> Enjoy !
