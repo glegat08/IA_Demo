@@ -3,7 +3,7 @@
 Engine::Engine(SceneManager& scene)
 	: m_sceneManager(&scene)
 {
-	
+
 }
 
 
